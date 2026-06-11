@@ -32,9 +32,17 @@ export default function CallSession({ sessionId, onBack }) {
   async function load() {
     const s = await storage.getSession(sessionId);
     if (s) {
+      const sectionA = { ...initialSectionA, ...(s.sectionA || {}) };
+      // Migrazione: formaGiuridica/affiliazione potevano essere stringhe nelle versioni precedenti
+      if (!Array.isArray(sectionA.formaGiuridica)) {
+        sectionA.formaGiuridica = sectionA.formaGiuridica ? [sectionA.formaGiuridica] : [];
+      }
+      if (!Array.isArray(sectionA.affiliazione)) {
+        sectionA.affiliazione = sectionA.affiliazione ? [sectionA.affiliazione] : [];
+      }
       setSession({
         ...s,
-        sectionA: { ...initialSectionA, ...(s.sectionA || {}) },
+        sectionA,
         sectionB: { ...initialSectionB, ...(s.sectionB || {}) },
         pslPackage: s.pslPackage || { ...PSL_PACKAGE_DEFAULT },
       });
