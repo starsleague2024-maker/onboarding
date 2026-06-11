@@ -56,6 +56,7 @@ export const OPZIONI = {
   affiliazione: ["ACSI", "FITP", "Altro EPS", "Nessuna", "Non trovata"],
   regione: REGIONI,
   piattaformaPrenotazioni: ["Si", "No", "Non trovato"],
+  gestionaleBrand: ["Playtomic", "Wansport", "Sport Clubbi", "Due Palleggi", "Altro"],
   sitoWeb: ["Aggiornato", "Datato", "Assente"],
   socialStato: ["Attivo", "Poco attivo", "Assente"],
   appPropria: ["Si (app propria)", "Si (app del gestionale)", "No"],
