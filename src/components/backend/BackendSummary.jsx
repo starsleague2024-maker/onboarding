@@ -1,5 +1,6 @@
 import SemaforoBadge from "../SemaforoBadge";
 import { SectionTitle, TextField, TextAreaField } from "../Fields";
+import { COLORS } from "../../theme";
 
 export default function BackendSummary({ session, analisi, costiAttuali, costiPSL, onChange }) {
   return (
@@ -28,8 +29,8 @@ export default function BackendSummary({ session, analisi, costiAttuali, costiPS
         style={{
           padding: "12px",
           borderRadius: "8px",
-          background: "#f9fafb",
-          border: "1px solid #e5e7eb",
+          background: COLORS.card,
+          border: `1px solid ${COLORS.border}`,
           marginBottom: "16px",
         }}
       >

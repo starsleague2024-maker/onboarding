@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { storage, createEmptySession } from "../data";
 import SemaforoBadge from "./SemaforoBadge";
+import { COLORS } from "../theme";
 
 export default function Dashboard({ onOpenSession }) {
   const [sessions, setSessions] = useState([]);
@@ -29,14 +30,18 @@ export default function Dashboard({ onOpenSession }) {
 
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto", padding: "24px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-        <h1>PSL — Schede Centri</h1>
+      <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "24px" }}>
+        <img src={`${import.meta.env.BASE_URL}logo.png`} alt="PSL" style={{ height: "56px", borderRadius: "8px" }} />
+        <div style={{ flex: 1 }}>
+          <h1 style={{ margin: 0, color: COLORS.text }}>Schede Centri</h1>
+          <p style={{ margin: 0, color: COLORS.textMuted, fontSize: "0.9rem" }}>Padel Stars League — Onboarding</p>
+        </div>
         <button onClick={handleNew} style={primaryBtn}>
           + Nuova scheda
         </button>
       </div>
 
-      {sessions.length === 0 && <p>Nessuna scheda creata. Clicca "Nuova scheda" per iniziare.</p>}
+      {sessions.length === 0 && <p style={{ color: COLORS.textMuted }}>Nessuna scheda creata. Clicca "Nuova scheda" per iniziare.</p>}
 
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         {sessions.map((s) => (
@@ -45,17 +50,18 @@ export default function Dashboard({ onOpenSession }) {
             onClick={() => onOpenSession(s.id)}
             style={{
               padding: "12px 16px",
-              border: "1px solid #e5e7eb",
+              border: `1px solid ${COLORS.border}`,
               borderRadius: "8px",
               cursor: "pointer",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              background: COLORS.card,
             }}
           >
             <div>
-              <strong>{s.sectionA?.denominazione || "Senza nome"}</strong>
-              <div style={{ fontSize: "0.8rem", color: "#888" }}>
+              <strong style={{ color: COLORS.text }}>{s.sectionA?.denominazione || "Senza nome"}</strong>
+              <div style={{ fontSize: "0.8rem", color: COLORS.textMuted }}>
                 {s.dataCall || "Data non impostata"} — {s.nomeOperatore || "Operatore non impostato"}
               </div>
             </div>
@@ -73,13 +79,13 @@ export default function Dashboard({ onOpenSession }) {
 }
 
 const primaryBtn = {
-  padding: "8px 16px",
-  background: "#0ea5e9",
-  color: "white",
+  padding: "10px 18px",
+  background: COLORS.gold,
+  color: COLORS.navy,
   border: "none",
   borderRadius: "6px",
   cursor: "pointer",
-  fontWeight: 500,
+  fontWeight: 700,
 };
 
 const dangerBtn = {

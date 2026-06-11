@@ -27,9 +27,9 @@ export function calcolaCostiAttuali(dataA, dataB) {
   breakdown.affiliazione = riaffiliazione + tassaCampi;
 
   // Tesseramento — usa B5.5 se disponibile, altrimenti A.4 / split agonistici
-  const totTesserati = Number(dataB.b5_5_tesseratiTotali) || Number(dataA.tesseratiDichiarati) || 0;
-  const agonistici = Number(dataB.b5_5_tesseratiAgonistici) || Number(dataA.tesseratiAgonistici) || 0;
-  const nonAgonistici = Number(dataB.b5_5_tesseratiNonAgonistici) || Number(dataA.tesseratiNonAgonistici) || Math.max(totTesserati - agonistici, 0);
+  const totTesserati = Number(dataA.tesseratiRASD) || Number(dataB.b0_tesseratiTotali) || Number(dataB.b5_5_tesseratiTotali) || 0;
+  const agonistici = Number(dataB.b5_5_tesseratiAgonistici) || 0;
+  const nonAgonistici = Number(dataB.b5_5_tesseratiNonAgonistici) || Math.max(totTesserati - agonistici, 0);
 
   // Assunzione semplificata: agonistici over16 fascia 3a/4a/5a, non agonistici over16
   const costoTesseramento =
@@ -49,7 +49,6 @@ export function calcolaCostiAttuali(dataA, dataB) {
   // Software gestione
   const costoSoftware =
     Number(dataB.b5_2_costoSoftwareAnnuale) ||
-    Number(dataA.costoGestionaleAnnuale) ||
     0;
   breakdown.software = costoSoftware;
 

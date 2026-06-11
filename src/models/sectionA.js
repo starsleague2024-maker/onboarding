@@ -16,17 +16,15 @@ export const SEMAFORO = {
 export const initialSectionA = {
   // A.1
   denominazione: "",
-  // A.2
-  formaGiuridica: "", // "ASD" | "SSD" | "Impresa/SRL" | ""
-  // A.3
-  affiliazione: "", // "ACSI" | "FITP" | "Altro EPS" | "Nessuna" | ""
-  // A.4
-  tesseratiDichiarati: "",
-  tesseratiAgonistici: "",     // backend
-  tesseratiNonAgonistici: "",  // backend
+  // A.2 - multi-select: puo avere piu forme giuridiche (es. ASD + SSD)
+  formaGiuridica: [], // array di: "ASD" | "SSD" | "Impresa/SRL" | "Non trovata"
+  // A.3 - multi-select: puo avere piu affiliazioni (es. FITP + ente promozione)
+  affiliazione: [], // array di: "ACSI" | "FITP" | "Altro EPS" | "Nessuna" | "Non trovata"
+  // A.4 - tesserati dichiarati dal RASD (Sport e Salute). Se non trovato, si chiede in B.
+  tesseratiRASD: "",
   // A.5
   campiTotali: "",
-  // A.6
+  // A.6 - campi coperti (da verificare in call: pallone pressostatico invernale puo coprire campi outdoor)
   campiCoperti: "",
   // A.7
   regione: "",
@@ -46,11 +44,11 @@ export const initialSectionA = {
   googleRating: "",
   // A.15
   googleRecensioni: "",
-  // A.16
-  gestionaleVisibile: "", // "Si" | "No" | ""
-  gestionaleBrand: "",    // backend, testo libero / tendina
-  // A.17
-  costoGestionaleAnnuale: "",
+  // A.16 - Gestionale identificato online (tramite link prenotazione/sito/social)
+  gestionaleVisibile: "", // "Si" | "No" | "" -- "Si" = abbiamo individuato quale gestionale usa
+  gestionaleBrand: "",    // quale gestionale (se identificato)
+  // A.18 - App propria del centro
+  appPropria: "", // "Si (app propria)" | "Si (app del gestionale)" | "No" | ""
 };
 
 // Opzioni dropdown
@@ -63,6 +61,7 @@ export const OPZIONI = {
   sitoWeb: ["Aggiornato", "Datato", "Assente"],
   socialStato: ["Attivo", "Poco attivo", "Assente"],
   gestionaleVisibile: ["Si", "No", "Non trovato"],
+  appPropria: ["Si (app propria)", "Si (app del gestionale)", "No"],
 };
 
 /**
@@ -79,41 +78,53 @@ export function calcolaSemaforiA(data) {
     isKO: !data.denominazione,
   };
 
-  // A.2 Forma giuridica
-  if (data.formaGiuridica === "ASD" || data.formaGiuridica === "SSD") {
-    result.formaGiuridica = { semaforo: SEMAFORO.VERDE, needsCallFlag: false, isKO: false };
-  } else if (data.formaGiuridica === "Impresa/SRL") {
-    result.formaGiuridica = { semaforo: SEMAFORO.GIALLO, needsCallFlag: false, isKO: false };
-  } else {
-    result.formaGiuridica = { semaforo: SEMAFORO.ROSSO, needsCallFlag: true, isKO: !data.formaGiuridica };
-  }
-
-  // A.3 Affiliazione
-  switch (data.affiliazione) {
-    case "ACSI":
-      result.affiliazione = { semaforo: SEMAFORO.VERDE, needsCallFlag: false, isKO: false };
-      break;
-    case "FITP":
-      result.affiliazione = { semaforo: SEMAFORO.GIALLO, needsCallFlag: false, isKO: false };
-      break;
-    case "Altro EPS":
-    case "Nessuna":
-      result.affiliazione = { semaforo: SEMAFORO.ARANCIONE, needsCallFlag: false, isKO: false };
-      break;
-    default:
-      result.affiliazione = { semaforo: SEMAFORO.ROSSO, needsCallFlag: true, isKO: !data.affiliazione };
-  }
-
-  // A.4 Tesserati dichiarati
+  // A.2 Forma giuridica (multi-select)
   {
-    const n = Number(data.tesseratiDichiarati);
+    const arr = data.formaGiuridica || [];
+    if (arr.length === 0) {
+      result.formaGiuridica = { semaforo: SEMAFORO.ROSSO, needsCallFlag: true, isKO: true };
+    } else if (arr.includes("ASD") || arr.includes("SSD")) {
+      result.formaGiuridica = { semaforo: SEMAFORO.VERDE, needsCallFlag: false, isKO: false };
+    } else if (arr.includes("Impresa/SRL")) {
+      result.formaGiuridica = { semaforo: SEMAFORO.GIALLO, needsCallFlag: false, isKO: false };
+    } else {
+      result.formaGiuridica = { semaforo: SEMAFORO.ROSSO, needsCallFlag: true, isKO: true };
+    }
+  }
+
+  // A.3 Affiliazione (multi-select)
+  // Se ci sono piu affiliazioni (es. FITP + ente promozione), il semaforo riflette
+  // una via di mezzo: la presenza di ACSI e ottima, ma se c'e anche un altro EPS/FITP
+  // da gestire (migrazione), resta una flag media (giallo) -- da chiarire in call.
+  {
+    const arr = data.affiliazione || [];
+    if (arr.length === 0) {
+      result.affiliazione = { semaforo: SEMAFORO.ROSSO, needsCallFlag: true, isKO: true };
+    } else if (arr.length > 1) {
+      // piu affiliazioni: media -> giallo (da approfondire quale tenere/migrare in call)
+      result.affiliazione = { semaforo: SEMAFORO.GIALLO, needsCallFlag: false, isKO: false };
+    } else if (arr.includes("ACSI")) {
+      result.affiliazione = { semaforo: SEMAFORO.VERDE, needsCallFlag: false, isKO: false };
+    } else if (arr.includes("FITP")) {
+      result.affiliazione = { semaforo: SEMAFORO.GIALLO, needsCallFlag: false, isKO: false };
+    } else if (arr.includes("Altro EPS") || arr.includes("Nessuna")) {
+      result.affiliazione = { semaforo: SEMAFORO.ARANCIONE, needsCallFlag: false, isKO: false };
+    } else {
+      result.affiliazione = { semaforo: SEMAFORO.ROSSO, needsCallFlag: true, isKO: true };
+    }
+  }
+
+  // A.4 Tesserati dichiarati dal RASD
+  {
+    const n = Number(data.tesseratiRASD);
     let semaforo = SEMAFORO.NEUTRO;
-    if (data.tesseratiDichiarati === "" || isNaN(n)) {
-      semaforo = SEMAFORO.NEUTRO;
-    } else if (n < 15) semaforo = SEMAFORO.ROSSO;
-    else if (n < 60) semaforo = SEMAFORO.ARANCIONE;
-    else semaforo = SEMAFORO.VERDE;
-    result.tesseratiDichiarati = { semaforo, needsCallFlag: false, isKO: false };
+    let needsCallFlag = data.tesseratiRASD === "";
+    if (data.tesseratiRASD !== "" && !isNaN(n)) {
+      if (n < 15) semaforo = SEMAFORO.ROSSO;
+      else if (n < 60) semaforo = SEMAFORO.ARANCIONE;
+      else semaforo = SEMAFORO.VERDE;
+    }
+    result.tesseratiRASD = { semaforo, needsCallFlag, isKO: false };
   }
 
   // A.5 Campi totali
@@ -129,7 +140,7 @@ export function calcolaSemaforiA(data) {
     result.campiTotali = { semaforo, needsCallFlag, isKO: false };
   }
 
-  // A.6 Campi coperti — 0 = KO assoluto
+  // A.6 Campi coperti — 0 = KO assoluto (salvo conferma pallone pressostatico in B)
   {
     const n = Number(data.campiCoperti);
     let semaforo = SEMAFORO.NEUTRO;
@@ -217,21 +228,27 @@ export function calcolaSemaforiA(data) {
     result.googleRecensioni = { semaforo, needsCallFlag: false, isKO: false };
   }
 
-  // A.16 Gestionale visibile
-  if (data.gestionaleVisibile === "Si") {
-    result.gestionaleVisibile = { semaforo: SEMAFORO.GIALLO, needsCallFlag: false, isKO: false };
-  } else if (data.gestionaleVisibile === "No") {
-    result.gestionaleVisibile = { semaforo: SEMAFORO.VERDE, needsCallFlag: false, isKO: false };
+  // A.16 Gestionale identificato online — informativo, nessun blocco
+  if (data.gestionaleVisibile === "Si" || data.gestionaleVisibile === "No") {
+    result.gestionaleVisibile = { semaforo: SEMAFORO.NEUTRO, needsCallFlag: false, isKO: false };
   } else {
     result.gestionaleVisibile = { semaforo: SEMAFORO.NEUTRO, needsCallFlag: true, isKO: false };
   }
 
-  // A.17 Costo gestionale — informativo
-  result.costoGestionaleAnnuale = {
-    semaforo: SEMAFORO.NEUTRO,
-    needsCallFlag: data.costoGestionaleAnnuale === "",
-    isKO: false,
-  };
+  // A.18 App propria del centro
+  switch (data.appPropria) {
+    case "Si (app propria)":
+      result.appPropria = { semaforo: SEMAFORO.ROSSO, needsCallFlag: false, isKO: false };
+      break;
+    case "Si (app del gestionale)":
+      result.appPropria = { semaforo: SEMAFORO.GIALLO, needsCallFlag: false, isKO: false };
+      break;
+    case "No":
+      result.appPropria = { semaforo: SEMAFORO.VERDE, needsCallFlag: false, isKO: false };
+      break;
+    default:
+      result.appPropria = { semaforo: SEMAFORO.NEUTRO, needsCallFlag: true, isKO: false };
+  }
 
   return result;
 }

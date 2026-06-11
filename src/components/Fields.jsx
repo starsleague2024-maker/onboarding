@@ -1,4 +1,5 @@
 import SemaforoBadge from "./SemaforoBadge";
+import { COLORS } from "../theme";
 
 const fieldStyle = {
   display: "flex",
@@ -17,16 +18,21 @@ const labelRowStyle = {
 const inputStyle = {
   padding: "8px 10px",
   borderRadius: "6px",
-  border: "1px solid #ccc",
+  border: `1px solid ${COLORS.border}`,
   fontSize: "0.9rem",
+  background: COLORS.cardLight,
+  color: COLORS.text,
 };
+
+const labelStyle = { fontWeight: 500, fontSize: "0.85rem", color: COLORS.text };
+const flagStyle = { color: COLORS.gold, fontSize: "0.75rem" };
 
 export function TextField({ label, value, onChange, placeholder, semaforo, needsCallFlag }) {
   return (
     <div style={fieldStyle}>
       <div style={labelRowStyle}>
-        <label style={{ fontWeight: 500, fontSize: "0.85rem" }}>
-          {label} {needsCallFlag && <span style={{ color: "#f97316", fontSize: "0.75rem" }}>(chiedere in call)</span>}
+        <label style={labelStyle}>
+          {label} {needsCallFlag && <span style={flagStyle}>(chiedere in call)</span>}
         </label>
         {semaforo && <SemaforoBadge semaforo={semaforo} />}
       </div>
@@ -45,8 +51,8 @@ export function NumberField({ label, value, onChange, placeholder, semaforo, nee
   return (
     <div style={fieldStyle}>
       <div style={labelRowStyle}>
-        <label style={{ fontWeight: 500, fontSize: "0.85rem" }}>
-          {label} {needsCallFlag && <span style={{ color: "#f97316", fontSize: "0.75rem" }}>(chiedere in call)</span>}
+        <label style={labelStyle}>
+          {label} {needsCallFlag && <span style={flagStyle}>(chiedere in call)</span>}
         </label>
         {semaforo && <SemaforoBadge semaforo={semaforo} />}
       </div>
@@ -58,7 +64,7 @@ export function NumberField({ label, value, onChange, placeholder, semaforo, nee
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
         />
-        {suffix && <span style={{ fontSize: "0.85rem", color: "#666" }}>{suffix}</span>}
+        {suffix && <span style={{ fontSize: "0.85rem", color: COLORS.textMuted }}>{suffix}</span>}
       </div>
     </div>
   );
@@ -68,8 +74,8 @@ export function SelectField({ label, value, onChange, options, semaforo, needsCa
   return (
     <div style={fieldStyle}>
       <div style={labelRowStyle}>
-        <label style={{ fontWeight: 500, fontSize: "0.85rem" }}>
-          {label} {needsCallFlag && <span style={{ color: "#f97316", fontSize: "0.75rem" }}>(chiedere in call)</span>}
+        <label style={labelStyle}>
+          {label} {needsCallFlag && <span style={flagStyle}>(chiedere in call)</span>}
         </label>
         {semaforo && <SemaforoBadge semaforo={semaforo} />}
       </div>
@@ -85,10 +91,57 @@ export function SelectField({ label, value, onChange, options, semaforo, needsCa
   );
 }
 
+export function MultiSelectField({ label, values, onChange, options, semaforo, needsCallFlag }) {
+  const selected = Array.isArray(values) ? values : [];
+
+  function toggle(opt) {
+    if (selected.includes(opt)) {
+      onChange(selected.filter((v) => v !== opt));
+    } else {
+      onChange([...selected, opt]);
+    }
+  }
+
+  return (
+    <div style={fieldStyle}>
+      <div style={labelRowStyle}>
+        <label style={labelStyle}>
+          {label} {needsCallFlag && <span style={flagStyle}>(chiedere in call)</span>}
+        </label>
+        {semaforo && <SemaforoBadge semaforo={semaforo} />}
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+        {options.map((opt) => {
+          const active = selected.includes(opt);
+          return (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => toggle(opt)}
+              style={{
+                padding: "6px 12px",
+                borderRadius: "20px",
+                border: `1px solid ${active ? COLORS.gold : COLORS.border}`,
+                background: active ? COLORS.gold : COLORS.cardLight,
+                color: active ? COLORS.navy : COLORS.text,
+                fontSize: "0.8rem",
+                cursor: "pointer",
+                fontWeight: active ? 600 : 400,
+              }}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function TextAreaField({ label, value, onChange, placeholder }) {
   return (
     <div style={fieldStyle}>
-      <label style={{ fontWeight: 500, fontSize: "0.85rem" }}>{label}</label>
+      <label style={labelStyle}>{label}</label>
       <textarea
         style={{ ...inputStyle, minHeight: "70px", resize: "vertical" }}
         value={value ?? ""}
@@ -106,8 +159,9 @@ export function SectionTitle({ children }) {
         marginTop: "24px",
         marginBottom: "8px",
         paddingBottom: "4px",
-        borderBottom: "2px solid #e5e7eb",
+        borderBottom: `2px solid ${COLORS.gold}`,
         fontSize: "1.05rem",
+        color: COLORS.text,
       }}
     >
       {children}

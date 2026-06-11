@@ -4,7 +4,11 @@
 import { SEMAFORO } from "./sectionA";
 
 export const initialSectionB = {
+  // B0 - Tesserati (se non trovati in A.4 / RASD)
+  b0_tesseratiTotali: "", // chiesto qui solo se A.4 non trovato
+
   // B1 - Campi e vincoli
+  b1_0_palloneInvernale: "", // "N/A" | "Si" | "No" -- se in A.6 ci sono campi outdoor, chiedere se in inverno vengono coperti con pallone pressostatico
   b1_1_vincoliFITP: "",        // "Nessuno" | "Alcuni" | "Tutti"
   b1_1_quantiVincolati: "",     // testo, se "Alcuni"
   b1_2_campiDisponibiliPSL: "", // "0" | "1" | "2" | "3+"
@@ -55,6 +59,7 @@ export const initialSectionB = {
 };
 
 export const OPZIONI_B = {
+  b1_0_palloneInvernale: ["N/A", "Si", "No"],
   b1_1_vincoliFITP: ["Nessuno", "Alcuni", "Tutti"],
   b1_2_campiDisponibiliPSL: ["0", "1", "2", "3+"],
   b1_3_clausolaResponsabilita: ["N/A", "Si", "No"],
@@ -92,6 +97,17 @@ export const OPZIONI_B = {
  */
 export function calcolaSemaforiB(data) {
   const result = {};
+
+  // B0 tesserati totali (fallback) — informativo
+  result.b0_tesseratiTotali = sem(SEMAFORO.NEUTRO);
+
+  // B1.0 pallone pressostatico invernale
+  switch (data.b1_0_palloneInvernale) {
+    case "N/A": result.b1_0_palloneInvernale = sem(SEMAFORO.NEUTRO); break;
+    case "Si": result.b1_0_palloneInvernale = sem(SEMAFORO.VERDE); break;
+    case "No": result.b1_0_palloneInvernale = sem(SEMAFORO.NEUTRO); break;
+    default: result.b1_0_palloneInvernale = sem(SEMAFORO.NEUTRO);
+  }
 
   // B1.1 vincoli FITP
   switch (data.b1_1_vincoliFITP) {

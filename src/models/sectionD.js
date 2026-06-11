@@ -36,8 +36,8 @@ export function checkIncongruenze(dataA, dataB) {
   const incongruenze = [];
 
   // A.4 vs B.5.5 — scarto > 30%
-  const a4 = Number(dataA.tesseratiDichiarati);
-  const b55 = Number(dataB.b5_5_tesseratiTotali);
+  const a4 = Number(dataA.tesseratiRASD);
+  const b55 = Number(dataB.b5_5_tesseratiTotali) || Number(dataB.b0_tesseratiTotali);
   if (!isNaN(a4) && !isNaN(b55) && a4 > 0 && b55 > 0) {
     const scarto = Math.abs(a4 - b55) / a4;
     if (scarto > 0.3) {
@@ -128,7 +128,7 @@ export function calcolaAnalisiFinale(dataA, dataB, semaforiA, semaforiB) {
   if (dataB.b7_1_organizzaTornei === "Si") {
     segnaliPositivi.push("Centro con tornei a montepremi: ha sponsor + cultura eventi -> appetibile PSL Full");
   }
-  const nonAgonistici = Number(dataA.tesseratiNonAgonistici) || Number(dataB.b5_5_tesseratiNonAgonistici);
+  const nonAgonistici = Number(dataB.b5_5_tesseratiNonAgonistici);
   if (!isNaN(nonAgonistici) && nonAgonistici > 60) {
     segnaliPositivi.push("Alto numero di tesserati non agonistici");
   }

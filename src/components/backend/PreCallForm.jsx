@@ -1,5 +1,5 @@
 import { OPZIONI } from "../../models/sectionA";
-import { TextField, NumberField, SelectField, SectionTitle } from "../Fields";
+import { TextField, NumberField, SelectField, MultiSelectField, SectionTitle } from "../Fields";
 
 export default function PreCallForm({ data, semafori, onChange }) {
   const set = (field) => (value) => onChange({ ...data, [field]: value });
@@ -16,18 +16,18 @@ export default function PreCallForm({ data, semafori, onChange }) {
         needsCallFlag={semafori.denominazione?.needsCallFlag}
       />
 
-      <SelectField
-        label="A.2 Forma giuridica"
-        value={data.formaGiuridica}
+      <MultiSelectField
+        label="A.2 Forma giuridica (puo essere piu di una)"
+        values={data.formaGiuridica}
         onChange={set("formaGiuridica")}
         options={OPZIONI.formaGiuridica}
         semaforo={semafori.formaGiuridica?.semaforo}
         needsCallFlag={semafori.formaGiuridica?.needsCallFlag}
       />
 
-      <SelectField
-        label="A.3 Affiliazione"
-        value={data.affiliazione}
+      <MultiSelectField
+        label="A.3 Affiliazione (puo essere piu di una, es. FITP + ente promozione)"
+        values={data.affiliazione}
         onChange={set("affiliazione")}
         options={OPZIONI.affiliazione}
         semaforo={semafori.affiliazione?.semaforo}
@@ -35,27 +35,12 @@ export default function PreCallForm({ data, semafori, onChange }) {
       />
 
       <NumberField
-        label="A.4 Tesserati dichiarati"
-        value={data.tesseratiDichiarati}
-        onChange={set("tesseratiDichiarati")}
-        semaforo={semafori.tesseratiDichiarati?.semaforo}
+        label="A.4 Tesserati dichiarati dal RASD (Sport e Salute)"
+        value={data.tesseratiRASD}
+        onChange={set("tesseratiRASD")}
+        semaforo={semafori.tesseratiRASD?.semaforo}
+        needsCallFlag={semafori.tesseratiRASD?.needsCallFlag}
       />
-      <div style={{ display: "flex", gap: "12px" }}>
-        <div style={{ flex: 1 }}>
-          <NumberField
-            label="↳ di cui agonistici (backend)"
-            value={data.tesseratiAgonistici}
-            onChange={set("tesseratiAgonistici")}
-          />
-        </div>
-        <div style={{ flex: 1 }}>
-          <NumberField
-            label="↳ di cui non agonistici (backend)"
-            value={data.tesseratiNonAgonistici}
-            onChange={set("tesseratiNonAgonistici")}
-          />
-        </div>
-      </div>
 
       <NumberField
         label="A.5 Campi totali"
@@ -72,6 +57,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         semaforo={semafori.campiCoperti?.semaforo}
         needsCallFlag={semafori.campiCoperti?.needsCallFlag}
       />
+      <p style={{ fontSize: "0.8rem", color: "#a8b5c2", marginTop: "-8px" }}>
+        Nota: se ci sono campi outdoor, in call verra chiesto se in inverno vengono coperti con pallone pressostatico (B.1.0).
+      </p>
 
       <SelectField
         label="A.7 Regione / Area"
@@ -155,7 +143,7 @@ export default function PreCallForm({ data, semafori, onChange }) {
       />
 
       <SelectField
-        label="A.16 Gestionale visibile online"
+        label="A.16 Gestionale identificato online (tramite link prenotazione/sito/social)"
         value={data.gestionaleVisibile}
         onChange={set("gestionaleVisibile")}
         options={OPZIONI.gestionaleVisibile}
@@ -163,19 +151,21 @@ export default function PreCallForm({ data, semafori, onChange }) {
         needsCallFlag={semafori.gestionaleVisibile?.needsCallFlag}
       />
       {data.gestionaleVisibile === "Si" && (
-        <TextField
+        <SelectField
           label="↳ Quale gestionale? (backend)"
           value={data.gestionaleBrand}
           onChange={set("gestionaleBrand")}
+          options={OPZIONI.gestionaleBrand}
         />
       )}
 
-      <NumberField
-        label="A.17 Costo gestionale annuale"
-        value={data.costoGestionaleAnnuale}
-        onChange={set("costoGestionaleAnnuale")}
-        suffix="€/anno"
-        needsCallFlag={semafori.costoGestionaleAnnuale?.needsCallFlag}
+      <SelectField
+        label="A.18 Il centro ha una app propria?"
+        value={data.appPropria}
+        onChange={set("appPropria")}
+        options={OPZIONI.appPropria}
+        semaforo={semafori.appPropria?.semaforo}
+        needsCallFlag={semafori.appPropria?.needsCallFlag}
       />
     </div>
   );

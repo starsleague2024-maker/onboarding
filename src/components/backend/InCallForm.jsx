@@ -1,14 +1,41 @@
 import { OPZIONI_B } from "../../models/sectionB";
 import { TextField, NumberField, SelectField, TextAreaField, SectionTitle } from "../Fields";
 
-export default function InCallForm({ data, semafori, onChange }) {
+export default function InCallForm({ data, semafori, onChange, dataA }) {
   const set = (field) => (value) => onChange({ ...data, [field]: value });
+
+  const tesseratiNonTrovati = !dataA?.tesseratiRASD;
+  const haCampiOutdoor = Number(dataA?.campiTotali) > Number(dataA?.campiCoperti || 0);
+  const gestionaleIdentificato = dataA?.gestionaleVisibile === "Si" ? dataA?.gestionaleBrand : null;
 
   return (
     <div>
       <SectionTitle>Sezione B — In-call</SectionTitle>
 
+      {tesseratiNonTrovati && (
+        <>
+          <h4>B0 — Tesserati</h4>
+          <NumberField
+            label="B.0 Quanti tesserati avete (totale)? (non trovato in pre-call)"
+            value={data.b0_tesseratiTotali}
+            onChange={set("b0_tesseratiTotali")}
+            semaforo={semafori.b0_tesseratiTotali?.semaforo}
+          />
+        </>
+      )}
+
       <h4>B1 — Campi e vincoli</h4>
+
+      {haCampiOutdoor && (
+        <SelectField
+          label="B.1.0 In inverno montate il pallone pressostatico sui campi scoperti?"
+          value={data.b1_0_palloneInvernale}
+          onChange={set("b1_0_palloneInvernale")}
+          options={OPZIONI_B.b1_0_palloneInvernale}
+          semaforo={semafori.b1_0_palloneInvernale?.semaforo}
+        />
+      )}
+
       <SelectField
         label="B.1.1 Campi coperti vincolati FITP/altri EPS?"
         value={data.b1_1_vincoliFITP}
@@ -123,6 +150,11 @@ export default function InCallForm({ data, semafori, onChange }) {
       />
 
       <h4>B5 — Gestionale e costi</h4>
+      {gestionaleIdentificato && (
+        <p style={{ fontSize: "0.8rem", color: "#a8b5c2", marginTop: 0 }}>
+          In pre-call abbiamo individuato: <strong>{gestionaleIdentificato}</strong> — confermalo o correggilo qui sotto.
+        </p>
+      )}
       <SelectField
         label="B.5.1 Software di gestione attuale?"
         value={data.b5_1_softwareGestione}
@@ -140,7 +172,7 @@ export default function InCallForm({ data, semafori, onChange }) {
       )}
 
       <NumberField
-        label="B.5.2 Costo software di gestione annuale?"
+        label="B.5.2 Costo software di gestione annuale (dichiarato dal centro)"
         value={data.b5_2_costoSoftwareAnnuale}
         onChange={set("b5_2_costoSoftwareAnnuale")}
         suffix="€/anno"

@@ -1,12 +1,5 @@
 import { SEMAFORO } from "../models/sectionA";
-
-const COLORS = {
-  [SEMAFORO.VERDE]: "#22c55e",
-  [SEMAFORO.GIALLO]: "#eab308",
-  [SEMAFORO.ARANCIONE]: "#f97316",
-  [SEMAFORO.ROSSO]: "#ef4444",
-  [SEMAFORO.NEUTRO]: "#d1d5db",
-};
+import { SEMAFORO_COLORS } from "../theme";
 
 const LABELS = {
   [SEMAFORO.VERDE]: "OK",
@@ -17,7 +10,7 @@ const LABELS = {
 };
 
 export default function SemaforoBadge({ semaforo, showLabel = false }) {
-  const color = COLORS[semaforo] || COLORS[SEMAFORO.NEUTRO];
+  const color = SEMAFORO_COLORS[semaforo] || SEMAFORO_COLORS[SEMAFORO.NEUTRO];
   return (
     <span
       style={{
@@ -35,10 +28,11 @@ export default function SemaforoBadge({ semaforo, showLabel = false }) {
           borderRadius: "50%",
           backgroundColor: color,
           display: "inline-block",
-          border: "1px solid rgba(0,0,0,0.1)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          boxShadow: `0 0 6px ${color}99`,
         }}
       />
-      {showLabel && <span style={{ color: "#555" }}>{LABELS[semaforo]}</span>}
+      {showLabel && <span style={{ color: "#a8b5c2" }}>{LABELS[semaforo]}</span>}
     </span>
   );
 }

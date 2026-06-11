@@ -9,6 +9,7 @@ import PreCallForm from "./backend/PreCallForm";
 import InCallForm from "./backend/InCallForm";
 import BackendSummary from "./backend/BackendSummary";
 import FrontendSummary from "./frontend/FrontendSummary";
+import { COLORS } from "../theme";
 
 const TABS = {
   PRECALL: "precall",
@@ -103,7 +104,7 @@ export default function CallSession({ sessionId, onBack }) {
         <PreCallForm data={session.sectionA} semafori={semaforiA} onChange={handleSectionAChange} />
       )}
       {tab === TABS.INCALL && (
-        <InCallForm data={session.sectionB} semafori={semaforiB} onChange={handleSectionBChange} />
+        <InCallForm data={session.sectionB} semafori={semaforiB} onChange={handleSectionBChange} dataA={session.sectionA} />
       )}
       {tab === TABS.BACKEND && (
         <BackendSummary
@@ -115,7 +116,7 @@ export default function CallSession({ sessionId, onBack }) {
         />
       )}
       {tab === TABS.FRONTEND && (
-        <div style={{ background: "white", padding: "24px", borderRadius: "8px", border: "1px solid #e5e7eb" }}>
+        <div style={{ background: COLORS.white, padding: "24px", borderRadius: "8px", border: `1px solid ${COLORS.border}`, color: COLORS.navy }}>
           <FrontendSummary session={session} dataA={session.sectionA} analisi={analisi} confronto={confronto} />
         </div>
       )}
@@ -130,11 +131,11 @@ function TabButton({ active, onClick, children, highlight }) {
       style={{
         padding: "8px 14px",
         borderRadius: "6px",
-        border: active ? "2px solid #0ea5e9" : "1px solid #ccc",
-        background: highlight ? (active ? "#0ea5e9" : "#e0f2fe") : active ? "#e0f2fe" : "white",
-        color: highlight && active ? "white" : "#333",
+        border: active ? `2px solid ${COLORS.gold}` : `1px solid ${COLORS.border}`,
+        background: active ? COLORS.gold : COLORS.card,
+        color: active ? COLORS.navy : COLORS.text,
         cursor: "pointer",
-        fontWeight: active ? 600 : 400,
+        fontWeight: active ? 700 : 400,
       }}
     >
       {children}
@@ -145,7 +146,8 @@ function TabButton({ active, onClick, children, highlight }) {
 const linkBtn = {
   background: "none",
   border: "none",
-  color: "#0ea5e9",
+  color: COLORS.gold,
   cursor: "pointer",
   fontSize: "0.9rem",
+  fontWeight: 600,
 };

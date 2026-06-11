@@ -1,6 +1,7 @@
 import SemaforoBadge from "../SemaforoBadge";
 import { ARGOMENTI_COMMERCIALI } from "../../models/sectionC";
 import { SEMAFORO } from "../../models/sectionA";
+import { COLORS } from "../../theme";
 
 const SEMAFORO_DESCRIZIONE = {
   [SEMAFORO.VERDE]: "Il centro presenta tutte le caratteristiche per entrare nel circuito PSL Full.",
@@ -20,7 +21,7 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
   if (dataA.instagram === "Attivo" || dataA.facebook === "Attivo") {
     puntiDiForza.push("Presenza attiva sui canali social");
   }
-  if (dataA.tesseratiDichiarati && Number(dataA.tesseratiDichiarati) >= 60) {
+  if (dataA.tesseratiRASD && Number(dataA.tesseratiRASD) >= 60) {
     puntiDiForza.push("Solida base di tesserati");
   }
 
@@ -40,13 +41,11 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
     <div style={{ maxWidth: "800px", margin: "0 auto" }}>
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: "24px" }}>
-        <h1 style={{ marginBottom: "4px" }}>{dataA.denominazione || "Centro Padel"}</h1>
+        <img src={`${import.meta.env.BASE_URL}logo.png`} alt="PSL" style={{ height: "64px", borderRadius: "8px", marginBottom: "8px" }} />
+        <h1 style={{ marginBottom: "4px", color: COLORS.navy }}>{dataA.denominazione || "Centro Padel"}</h1>
         <p style={{ color: "#666" }}>
           {session.dataCall && `Data: ${session.dataCall}`}
         </p>
-        <div style={{ fontWeight: "bold", fontSize: "1.2rem", letterSpacing: "2px", color: "#0ea5e9" }}>
-          PSL — Padel Sports League
-        </div>
       </div>
 
       {/* Semaforo generale */}
@@ -54,8 +53,8 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
         style={{
           padding: "16px",
           borderRadius: "10px",
-          background: "#f0f9ff",
-          border: "1px solid #bae6fd",
+          background: "#eef2f6",
+          border: `1px solid ${COLORS.navy}33`,
           marginBottom: "24px",
           textAlign: "center",
         }}
@@ -97,7 +96,7 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
       <Section title="Confronto costi">
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
-            <tr style={{ borderBottom: "2px solid #e5e7eb" }}>
+            <tr style={{ borderBottom: `2px solid ${COLORS.navy}` }}>
               <th style={{ textAlign: "left", padding: "8px" }}>Voce</th>
               <th style={{ textAlign: "right", padding: "8px" }}>Oggi</th>
               <th style={{ textAlign: "right", padding: "8px" }}>Con PSL</th>
@@ -162,7 +161,7 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
 function Section({ title, children }) {
   return (
     <div style={{ marginBottom: "24px" }}>
-      <h3 style={{ borderBottom: "2px solid #e5e7eb", paddingBottom: "4px" }}>{title}</h3>
+      <h3 style={{ borderBottom: `2px solid ${COLORS.gold}`, paddingBottom: "4px", color: COLORS.navy }}>{title}</h3>
       {children}
     </div>
   );
