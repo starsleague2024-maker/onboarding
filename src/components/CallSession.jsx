@@ -26,28 +26,26 @@ export default function CallSession({ sessionId, onBack }) {
   const [saveStatus, setSaveStatus] = useState("");
 
   useEffect(() => {
+    async function load() {
+      const s = await storage.getSession(sessionId);
+      if (s) {
+        const sectionA = { ...initialSectionA, ...(s.sectionA || {}) };
+        if (!Array.isArray(sectionA.formaGiuridica)) {
+          sectionA.formaGiuridica = sectionA.formaGiuridica ? [sectionA.formaGiuridica] : [];
+        }
+        if (!Array.isArray(sectionA.affiliazione)) {
+          sectionA.affiliazione = sectionA.affiliazione ? [sectionA.affiliazione] : [];
+        }
+        setSession({
+          ...s,
+          sectionA,
+          sectionB: { ...initialSectionB, ...(s.sectionB || {}) },
+          pslPackage: s.pslPackage || { ...PSL_PACKAGE_DEFAULT },
+        });
+      }
+    }
     load();
   }, [sessionId]);
-
-  async function load() {
-    const s = await storage.getSession(sessionId);
-    if (s) {
-      const sectionA = { ...initialSectionA, ...(s.sectionA || {}) };
-      // Migrazione: formaGiuridica/affiliazione potevano essere stringhe nelle versioni precedenti
-      if (!Array.isArray(sectionA.formaGiuridica)) {
-        sectionA.formaGiuridica = sectionA.formaGiuridica ? [sectionA.formaGiuridica] : [];
-      }
-      if (!Array.isArray(sectionA.affiliazione)) {
-        sectionA.affiliazione = sectionA.affiliazione ? [sectionA.affiliazione] : [];
-      }
-      setSession({
-        ...s,
-        sectionA,
-        sectionB: { ...initialSectionB, ...(s.sectionB || {}) },
-        pslPackage: s.pslPackage || { ...PSL_PACKAGE_DEFAULT },
-      });
-    }
-  }
 
   const save = useCallback(async (updated) => {
     setSaveStatus("Salvataggio...");
