@@ -7,6 +7,11 @@ export const initialSectionB = {
   // B0 - Tesserati (se non trovati in A.4 / RASD)
   b0_tesseratiTotali: "", // chiesto qui solo se A.4 non trovato
 
+  // B0.1 - Se A.18 = "Si (app del gestionale)": viene effettivamente utilizzata?
+  b0_1_appGestionaleUsata: "", // "N/A" | "Si" | "No"
+  b0_1_appGestionaleMotivo: "", // "Non si trovano bene" | "Non sanno sfruttarla" | "I giocatori non la usano" | "Altro"
+  b0_1_appGestionaleMotivoAltro: "", // testo libero se "Altro"
+
   // B1 - Campi e vincoli
   b1_0_palloneInvernale: "", // "N/A" | "Si" | "No" -- se in A.6 ci sono campi outdoor, chiedere se in inverno vengono coperti con pallone pressostatico
   b1_1_vincoliFITP: "",        // "Nessuno" | "Alcuni" | "Tutti"
@@ -59,6 +64,8 @@ export const initialSectionB = {
 };
 
 export const OPZIONI_B = {
+  b0_1_appGestionaleUsata: ["N/A", "Si", "No"],
+  b0_1_appGestionaleMotivo: ["Non si trovano bene", "Non sanno sfruttarla", "I giocatori non la usano", "Altro"],
   b1_0_palloneInvernale: ["N/A", "Si", "No"],
   b1_1_vincoliFITP: ["Nessuno", "Alcuni", "Tutti"],
   b1_2_campiDisponibiliPSL: ["0", "1", "2", "3+"],
@@ -100,6 +107,14 @@ export function calcolaSemaforiB(data) {
 
   // B0 tesserati totali (fallback) — informativo
   result.b0_tesseratiTotali = sem(SEMAFORO.NEUTRO);
+
+  // B0.1 app gestionale usata — entrambe le risposte sono un buon segnale per noi (verde),
+  // ma "No" indica un'area su cui lavorare (motivo raccolto separatamente)
+  switch (data.b0_1_appGestionaleUsata) {
+    case "Si": result.b0_1_appGestionaleUsata = sem(SEMAFORO.VERDE); break;
+    case "No": result.b0_1_appGestionaleUsata = sem(SEMAFORO.VERDE); break;
+    default: result.b0_1_appGestionaleUsata = sem(SEMAFORO.NEUTRO);
+  }
 
   // B1.0 pallone pressostatico invernale
   switch (data.b1_0_palloneInvernale) {

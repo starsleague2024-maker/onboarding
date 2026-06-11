@@ -1,11 +1,10 @@
 import SemaforoBadge from "../SemaforoBadge";
-import { SectionTitle, TextField, TextAreaField } from "../Fields";
+import { TextField, TextAreaField } from "../Fields";
 import { COLORS } from "../../theme";
 
 export default function BackendSummary({ session, analisi, costiAttuali, costiPSL, onChange }) {
   return (
     <div>
-      <SectionTitle>Backend — Analisi interna PSL</SectionTitle>
 
       <div style={{ display: "flex", gap: "12px" }}>
         <div style={{ flex: 1 }}>

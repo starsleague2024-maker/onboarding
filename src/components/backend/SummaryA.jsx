@@ -23,12 +23,6 @@ export default function SummaryA({ data, semafori }) {
 
   return (
     <div>
-      <h3 style={{ borderBottom: `2px solid ${COLORS.gold}`, paddingBottom: "4px", color: COLORS.text }}>
-        Riepilogo Sezione A
-      </h3>
-      <p style={{ color: COLORS.textMuted, fontSize: "0.9rem" }}>
-        Controlla i dati raccolti prima di procedere alla call. Puoi tornare indietro per modificarli in qualsiasi momento.
-      </p>
       <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
         <tbody>
           {rows.map(([label, value, sem]) => (

@@ -1,12 +1,11 @@
 import { OPZIONI } from "../../models/sectionA";
-import { TextField, NumberField, SelectField, MultiSelectField, TextAreaField, SectionTitle } from "../Fields";
+import { TextField, NumberField, SelectField, MultiSelectField, TextAreaField } from "../Fields";
 
 export default function PreCallForm({ data, semafori, onChange }) {
   const set = (field) => (value) => onChange({ ...data, [field]: value });
 
   return (
     <div>
-      <SectionTitle>Sezione A — Pre-call</SectionTitle>
 
       <TextField
         label="A.1 Denominazione ufficiale"
@@ -15,6 +14,25 @@ export default function PreCallForm({ data, semafori, onChange }) {
         semaforo={semafori.denominazione?.semaforo}
         needsCallFlag={semafori.denominazione?.needsCallFlag}
       />
+
+      <div style={{ display: "flex", gap: "12px" }}>
+        <div style={{ flex: 1 }}>
+          <TextField
+            label="Telefono"
+            value={data.telefono}
+            onChange={set("telefono")}
+            placeholder="es. 0123 456789"
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <TextField
+            label="Email"
+            value={data.email}
+            onChange={set("email")}
+            placeholder="es. info@centro.it"
+          />
+        </div>
+      </div>
 
       <MultiSelectField
         label="A.2 Forma giuridica (puo essere piu di una)"

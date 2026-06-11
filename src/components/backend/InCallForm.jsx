@@ -1,15 +1,15 @@
 import { OPZIONI_B } from "../../models/sectionB";
-import { TextField, NumberField, SelectField, TextAreaField, SectionTitle } from "../Fields";
+import { TextField, NumberField, SelectField, TextAreaField } from "../Fields";
 
 export default function InCallForm({ data, semafori, onChange, dataA }) {
   const set = (field) => (value) => onChange({ ...data, [field]: value });
 
   const tesseratiNonTrovati = !dataA?.tesseratiRASD;
   const haCampiOutdoor = Number(dataA?.campiTotali) > Number(dataA?.campiCoperti || 0);
+  const usaAppGestionale = dataA?.appPropria === "Si (app del gestionale)";
 
   return (
     <div>
-      <SectionTitle>Sezione B — In-call</SectionTitle>
 
       {tesseratiNonTrovati && (
         <>
@@ -20,6 +20,36 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
             onChange={set("b0_tesseratiTotali")}
             semaforo={semafori.b0_tesseratiTotali?.semaforo}
           />
+        </>
+      )}
+
+      {usaAppGestionale && (
+        <>
+          <h4>App del gestionale</h4>
+          <SelectField
+            label="Il centro/i giocatori utilizzano effettivamente l'app del gestionale?"
+            value={data.b0_1_appGestionaleUsata}
+            onChange={set("b0_1_appGestionaleUsata")}
+            options={OPZIONI_B.b0_1_appGestionaleUsata}
+            semaforo={semafori.b0_1_appGestionaleUsata?.semaforo}
+          />
+          {data.b0_1_appGestionaleUsata === "No" && (
+            <>
+              <SelectField
+                label="↳ Perche non viene utilizzata?"
+                value={data.b0_1_appGestionaleMotivo}
+                onChange={set("b0_1_appGestionaleMotivo")}
+                options={OPZIONI_B.b0_1_appGestionaleMotivo}
+              />
+              {data.b0_1_appGestionaleMotivo === "Altro" && (
+                <TextAreaField
+                  label="↳ Specifica"
+                  value={data.b0_1_appGestionaleMotivoAltro}
+                  onChange={set("b0_1_appGestionaleMotivoAltro")}
+                />
+              )}
+            </>
+          )}
         </>
       )}
 

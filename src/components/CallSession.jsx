@@ -13,10 +13,30 @@ import FrontendSummary from "./frontend/FrontendSummary";
 import { COLORS } from "../theme";
 
 const STEPS = [
-  { key: "precall", label: "1. Pre-call (A)" },
-  { key: "summaryA", label: "2. Riepilogo A" },
-  { key: "incall", label: "3. In-call (B)" },
-  { key: "analisi", label: "4. Analisi finale" },
+  {
+    key: "precall",
+    label: "Pre-call (A)",
+    title: "Sezione A — Pre-call",
+    description: "Raccogli qui le informazioni reperibili online (Sport e Salute, Google Maps, sito, social) prima di chiamare il centro. I campi non trovati verranno segnalati per essere chiesti in call.",
+  },
+  {
+    key: "summaryA",
+    label: "Riepilogo A",
+    title: "Riepilogo Sezione A",
+    description: "Controlla i dati raccolti prima di iniziare la call. Puoi tornare indietro per integrarli in qualsiasi momento.",
+  },
+  {
+    key: "incall",
+    label: "In-call (B)",
+    title: "Sezione B — In-call",
+    description: "Domande da porre al centro durante la chiamata. Rispondi in base a quanto dichiarato dall'interlocutore.",
+  },
+  {
+    key: "analisi",
+    label: "Analisi finale",
+    title: "Analisi finale e proposta",
+    description: "Riepilogo automatico, KO, incongruenze e confronto costi. Da qui puoi aprire la vista da condividere in screen-share con il centro.",
+  },
 ];
 
 export default function CallSession({ sessionId, onBack }) {
@@ -42,6 +62,9 @@ export default function CallSession({ sessionId, onBack }) {
           sectionB: { ...initialSectionB, ...(s.sectionB || {}) },
           pslPackage: s.pslPackage || { ...PSL_PACKAGE_DEFAULT },
         });
+        if (typeof s.currentStep === "number") {
+          setStep(s.currentStep);
+        }
       }
     }
     load();
@@ -85,41 +108,50 @@ export default function CallSession({ sessionId, onBack }) {
   const confronto = generaConfrontoFinale(session.sectionA, session.sectionB, session.pslPackage);
 
   function goNext() {
-    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+    setStep((s) => {
+      const next = Math.min(s + 1, STEPS.length - 1);
+      save({ ...session, currentStep: next });
+      return next;
+    });
   }
   function goBack() {
-    setStep((s) => Math.max(s - 1, 0));
+    setStep((s) => {
+      const next = Math.max(s - 1, 0);
+      save({ ...session, currentStep: next });
+      return next;
+    });
   }
 
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "16px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
         <button onClick={onBack} style={linkBtn}>
           ← Torna alla lista
         </button>
         <span style={{ fontSize: "0.8rem", color: COLORS.textMuted }}>{saveStatus}</span>
       </div>
 
-      {/* Step indicator */}
-      <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
-        {STEPS.map((s, i) => (
-          <button
-            key={s.key}
-            onClick={() => setStep(i)}
-            style={{
-              padding: "6px 12px",
-              borderRadius: "6px",
-              border: i === step ? `2px solid ${COLORS.gold}` : `1px solid ${COLORS.border}`,
-              background: i === step ? COLORS.gold : COLORS.card,
-              color: i === step ? COLORS.navy : COLORS.text,
-              cursor: "pointer",
-              fontWeight: i === step ? 700 : 400,
-              fontSize: "0.85rem",
-            }}
-          >
-            {s.label}
-          </button>
-        ))}
+      {/* Header sezione */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "16px",
+          marginBottom: "20px",
+          padding: "16px",
+          background: COLORS.card,
+          border: `1px solid ${COLORS.border}`,
+          borderRadius: "8px",
+        }}
+      >
+        <img src={`${import.meta.env.BASE_URL}logo.png`} alt="PSL" style={{ height: "48px", borderRadius: "6px", flexShrink: 0 }} />
+        <div>
+          <div style={{ fontSize: "0.75rem", color: COLORS.gold, fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>
+            Step {step + 1} di {STEPS.length}
+          </div>
+          <h2 style={{ margin: "2px 0 4px", color: COLORS.text }}>{STEPS[step].title}</h2>
+          <p style={{ margin: 0, color: COLORS.textMuted, fontSize: "0.9rem" }}>{STEPS[step].description}</p>
+        </div>
       </div>
 
       {step === 0 && (

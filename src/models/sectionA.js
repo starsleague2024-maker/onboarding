@@ -16,6 +16,9 @@ export const SEMAFORO = {
 export const initialSectionA = {
   // A.1
   denominazione: "",
+  // Contatti
+  telefono: "",
+  email: "",
   // A.2 - multi-select: puo avere piu forme giuridiche (es. ASD + SSD)
   formaGiuridica: [], // array di: "ASD" | "SSD" | "Impresa/SRL" | "Non trovata"
   // A.3 - multi-select: puo avere piu affiliazioni (es. FITP + ente promozione)
