@@ -44,11 +44,10 @@ export const initialSectionA = {
   googleRating: "",
   // A.15
   googleRecensioni: "",
-  // A.16 - Gestionale identificato online (tramite link prenotazione/sito/social)
-  gestionaleVisibile: "", // "Si" | "No" | "" -- "Si" = abbiamo individuato quale gestionale usa
-  gestionaleBrand: "",    // quale gestionale (se identificato)
   // A.18 - App propria del centro
   appPropria: "", // "Si (app propria)" | "Si (app del gestionale)" | "No" | ""
+  // Note libere
+  noteSezioneA: "",
 };
 
 // Opzioni dropdown
@@ -57,10 +56,8 @@ export const OPZIONI = {
   affiliazione: ["ACSI", "FITP", "Altro EPS", "Nessuna", "Non trovata"],
   regione: REGIONI,
   piattaformaPrenotazioni: ["Si", "No", "Non trovato"],
-  gestionaleBrand: ["Playtomic", "Wansport", "Sport Clubbi", "Due Palleggi", "Altro"],
   sitoWeb: ["Aggiornato", "Datato", "Assente"],
   socialStato: ["Attivo", "Poco attivo", "Assente"],
-  gestionaleVisibile: ["Si", "No", "Non trovato"],
   appPropria: ["Si (app propria)", "Si (app del gestionale)", "No"],
 };
 
@@ -226,13 +223,6 @@ export function calcolaSemaforiA(data) {
       else semaforo = SEMAFORO.VERDE;
     }
     result.googleRecensioni = { semaforo, needsCallFlag: false, isKO: false };
-  }
-
-  // A.16 Gestionale identificato online — informativo, nessun blocco
-  if (data.gestionaleVisibile === "Si" || data.gestionaleVisibile === "No") {
-    result.gestionaleVisibile = { semaforo: SEMAFORO.NEUTRO, needsCallFlag: false, isKO: false };
-  } else {
-    result.gestionaleVisibile = { semaforo: SEMAFORO.NEUTRO, needsCallFlag: true, isKO: false };
   }
 
   // A.18 App propria del centro

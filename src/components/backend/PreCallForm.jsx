@@ -1,5 +1,5 @@
 import { OPZIONI } from "../../models/sectionA";
-import { TextField, NumberField, SelectField, MultiSelectField, SectionTitle } from "../Fields";
+import { TextField, NumberField, SelectField, MultiSelectField, TextAreaField, SectionTitle } from "../Fields";
 
 export default function PreCallForm({ data, semafori, onChange }) {
   const set = (field) => (value) => onChange({ ...data, [field]: value });
@@ -143,29 +143,19 @@ export default function PreCallForm({ data, semafori, onChange }) {
       />
 
       <SelectField
-        label="A.16 Gestionale identificato online (tramite link prenotazione/sito/social)"
-        value={data.gestionaleVisibile}
-        onChange={set("gestionaleVisibile")}
-        options={OPZIONI.gestionaleVisibile}
-        semaforo={semafori.gestionaleVisibile?.semaforo}
-        needsCallFlag={semafori.gestionaleVisibile?.needsCallFlag}
-      />
-      {data.gestionaleVisibile === "Si" && (
-        <SelectField
-          label="↳ Quale gestionale? (backend)"
-          value={data.gestionaleBrand}
-          onChange={set("gestionaleBrand")}
-          options={OPZIONI.gestionaleBrand}
-        />
-      )}
-
-      <SelectField
         label="A.18 Il centro ha una app propria?"
         value={data.appPropria}
         onChange={set("appPropria")}
         options={OPZIONI.appPropria}
         semaforo={semafori.appPropria?.semaforo}
         needsCallFlag={semafori.appPropria?.needsCallFlag}
+      />
+
+      <TextAreaField
+        label="Note libere (Sezione A)"
+        value={data.noteSezioneA}
+        onChange={set("noteSezioneA")}
+        placeholder="Eventuali osservazioni aggiuntive emerse durante la ricerca pre-call..."
       />
     </div>
   );

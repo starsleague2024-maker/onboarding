@@ -6,21 +6,23 @@ import { calcolaCostiAttuali, calcolaCostiPSL, generaConfrontoFinale, PSL_PACKAG
 import { calcolaAnalisiFinale } from "../models/sectionD";
 
 import PreCallForm from "./backend/PreCallForm";
+import SummaryA from "./backend/SummaryA";
 import InCallForm from "./backend/InCallForm";
 import BackendSummary from "./backend/BackendSummary";
 import FrontendSummary from "./frontend/FrontendSummary";
 import { COLORS } from "../theme";
 
-const TABS = {
-  PRECALL: "precall",
-  INCALL: "incall",
-  BACKEND: "backend",
-  FRONTEND: "frontend",
-};
+const STEPS = [
+  { key: "precall", label: "1. Pre-call (A)" },
+  { key: "summaryA", label: "2. Riepilogo A" },
+  { key: "incall", label: "3. In-call (B)" },
+  { key: "analisi", label: "4. Analisi finale" },
+];
 
 export default function CallSession({ sessionId, onBack }) {
   const [session, setSession] = useState(null);
-  const [tab, setTab] = useState(TABS.PRECALL);
+  const [step, setStep] = useState(0);
+  const [showFrontend, setShowFrontend] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
 
   useEffect(() => {
@@ -32,8 +34,8 @@ export default function CallSession({ sessionId, onBack }) {
     if (s) {
       setSession({
         ...s,
-        sectionA: s.sectionA || { ...initialSectionA },
-        sectionB: s.sectionB || { ...initialSectionB },
+        sectionA: { ...initialSectionA, ...(s.sectionA || {}) },
+        sectionB: { ...initialSectionB, ...(s.sectionB || {}) },
         pslPackage: s.pslPackage || { ...PSL_PACKAGE_DEFAULT },
       });
     }
@@ -76,72 +78,137 @@ export default function CallSession({ sessionId, onBack }) {
   const costiPSL = calcolaCostiPSL(session.sectionA, session.sectionB, session.pslPackage, costiAttuali);
   const confronto = generaConfrontoFinale(session.sectionA, session.sectionB, session.pslPackage);
 
+  function goNext() {
+    setStep((s) => Math.min(s + 1, STEPS.length - 1));
+  }
+  function goBack() {
+    setStep((s) => Math.max(s - 1, 0));
+  }
+
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "16px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
         <button onClick={onBack} style={linkBtn}>
           ← Torna alla lista
         </button>
-        <span style={{ fontSize: "0.8rem", color: "#888" }}>{saveStatus}</span>
+        <span style={{ fontSize: "0.8rem", color: COLORS.textMuted }}>{saveStatus}</span>
       </div>
 
+      {/* Step indicator */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
-        <TabButton active={tab === TABS.PRECALL} onClick={() => setTab(TABS.PRECALL)}>
-          Pre-call (A)
-        </TabButton>
-        <TabButton active={tab === TABS.INCALL} onClick={() => setTab(TABS.INCALL)}>
-          In-call (B)
-        </TabButton>
-        <TabButton active={tab === TABS.BACKEND} onClick={() => setTab(TABS.BACKEND)}>
-          Backend / Analisi
-        </TabButton>
-        <TabButton active={tab === TABS.FRONTEND} onClick={() => setTab(TABS.FRONTEND)} highlight>
-          Vista Frontend (centro)
-        </TabButton>
+        {STEPS.map((s, i) => (
+          <button
+            key={s.key}
+            onClick={() => setStep(i)}
+            style={{
+              padding: "6px 12px",
+              borderRadius: "6px",
+              border: i === step ? `2px solid ${COLORS.gold}` : `1px solid ${COLORS.border}`,
+              background: i === step ? COLORS.gold : COLORS.card,
+              color: i === step ? COLORS.navy : COLORS.text,
+              cursor: "pointer",
+              fontWeight: i === step ? 700 : 400,
+              fontSize: "0.85rem",
+            }}
+          >
+            {s.label}
+          </button>
+        ))}
       </div>
 
-      {tab === TABS.PRECALL && (
-        <PreCallForm data={session.sectionA} semafori={semaforiA} onChange={handleSectionAChange} />
+      {step === 0 && (
+        <>
+          <PreCallForm data={session.sectionA} semafori={semaforiA} onChange={handleSectionAChange} />
+          <StepNav onNext={goNext} nextLabel="Avanza al riepilogo →" />
+        </>
       )}
-      {tab === TABS.INCALL && (
-        <InCallForm data={session.sectionB} semafori={semaforiB} onChange={handleSectionBChange} dataA={session.sectionA} />
+
+      {step === 1 && (
+        <>
+          <SummaryA data={session.sectionA} semafori={semaforiA} />
+          <StepNav onBack={goBack} onNext={goNext} backLabel="← Modifica pre-call" nextLabel="Vai a In-call →" />
+        </>
       )}
-      {tab === TABS.BACKEND && (
-        <BackendSummary
-          session={session}
-          analisi={analisi}
-          costiAttuali={costiAttuali}
-          costiPSL={costiPSL}
-          onChange={handleSessionMetaChange}
-        />
+
+      {step === 2 && (
+        <>
+          <InCallForm data={session.sectionB} semafori={semaforiB} onChange={handleSectionBChange} dataA={session.sectionA} />
+          <StepNav onBack={goBack} onNext={goNext} backLabel="← Torna al riepilogo A" nextLabel="Vai all'analisi finale →" />
+        </>
       )}
-      {tab === TABS.FRONTEND && (
-        <div style={{ background: COLORS.white, padding: "24px", borderRadius: "8px", border: `1px solid ${COLORS.border}`, color: COLORS.navy }}>
-          <FrontendSummary session={session} dataA={session.sectionA} analisi={analisi} confronto={confronto} />
-        </div>
+
+      {step === 3 && (
+        <>
+          {!showFrontend ? (
+            <>
+              <BackendSummary
+                session={session}
+                analisi={analisi}
+                costiAttuali={costiAttuali}
+                costiPSL={costiPSL}
+                onChange={handleSessionMetaChange}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px", gap: "8px", flexWrap: "wrap" }}>
+                <StepNav onBack={goBack} backLabel="← Torna a In-call" />
+                <button onClick={() => setShowFrontend(true)} style={primaryBtn}>
+                  Apri vista Frontend (per il centro) →
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ background: COLORS.white, padding: "24px", borderRadius: "8px", border: `1px solid ${COLORS.border}`, color: COLORS.navy }}>
+                <FrontendSummary session={session} dataA={session.sectionA} analisi={analisi} confronto={confronto} />
+              </div>
+              <div style={{ marginTop: "16px" }}>
+                <button onClick={() => setShowFrontend(false)} style={linkBtn}>
+                  ← Torna all'analisi backend
+                </button>
+              </div>
+            </>
+          )}
+        </>
       )}
     </div>
   );
 }
 
-function TabButton({ active, onClick, children, highlight }) {
+function StepNav({ onBack, onNext, backLabel = "← Indietro", nextLabel = "Avanti →" }) {
   return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: "8px 14px",
-        borderRadius: "6px",
-        border: active ? `2px solid ${COLORS.gold}` : `1px solid ${COLORS.border}`,
-        background: active ? COLORS.gold : COLORS.card,
-        color: active ? COLORS.navy : COLORS.text,
-        cursor: "pointer",
-        fontWeight: active ? 700 : 400,
-      }}
-    >
-      {children}
-    </button>
+    <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px", gap: "8px" }}>
+      {onBack ? (
+        <button onClick={onBack} style={secondaryBtn}>
+          {backLabel}
+        </button>
+      ) : <span />}
+      {onNext && (
+        <button onClick={onNext} style={primaryBtn}>
+          {nextLabel}
+        </button>
+      )}
+    </div>
   );
 }
+
+const primaryBtn = {
+  padding: "10px 18px",
+  background: COLORS.gold,
+  color: COLORS.navy,
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: 700,
+};
+
+const secondaryBtn = {
+  padding: "10px 18px",
+  background: COLORS.card,
+  color: COLORS.text,
+  border: `1px solid ${COLORS.border}`,
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: 500,
+};
 
 const linkBtn = {
   background: "none",

@@ -4,6 +4,30 @@
 import { SEMAFORO } from "./sectionA";
 
 /**
+ * Calcola il semaforo "corretto" di A.6 (campi coperti), tenendo conto
+ * del pallone pressostatico invernale (B.1.0): se il centro copre
+ * i campi outdoor in inverno, i campi vanno considerati coperti
+ * a tutti gli effetti per il KO e il conteggio.
+ */
+export function calcolaCampiCopertiEffettivi(dataA, dataB, semaforiA) {
+  const palloneAttivo = dataB.b1_0_palloneInvernale === "Si";
+
+  if (!palloneAttivo) {
+    return semaforiA.campiCoperti;
+  }
+
+  const totali = Number(dataA.campiTotali);
+  let semaforo = SEMAFORO.NEUTRO;
+  if (!isNaN(totali) && dataA.campiTotali !== "") {
+    if (totali === 1) semaforo = SEMAFORO.ROSSO;
+    else if (totali === 2) semaforo = SEMAFORO.ARANCIONE;
+    else semaforo = SEMAFORO.VERDE;
+  }
+
+  return { semaforo, needsCallFlag: false, isKO: false };
+}
+
+/**
  * Verifica i KO assoluti (blocco immediato).
  * Ritorna array di oggetti { code, message }
  */
@@ -19,9 +43,12 @@ export function checkKO(dataA, dataB, semaforiA, semaforiB) {
   if (semaforiA.affiliazione?.isKO) {
     ko.push({ code: "A.3", message: "Affiliazione non trovata e non fornita in call" });
   }
-  if (semaforiA.campiCoperti?.isKO) {
-    ko.push({ code: "A.6", message: "0 campi coperti" });
+
+  const campiCopertiEffettivi = calcolaCampiCopertiEffettivi(dataA, dataB, semaforiA);
+  if (campiCopertiEffettivi?.isKO) {
+    ko.push({ code: "A.6", message: "0 campi coperti (anche considerando il pallone pressostatico invernale)" });
   }
+
   if (semaforiB.b1_2_campiDisponibiliPSL?.isKO) {
     ko.push({ code: "B.1.2", message: "0 campi disponibili per eventi PSL" });
   }
@@ -52,20 +79,6 @@ export function checkIncongruenze(dataA, dataB) {
   // quindi confrontiamo con campi coperti dichiarati indirettamente se disponibile)
   // Placeholder: se in futuro si raccoglie un campo B per "campi totali dichiarati in call"
 
-  // A.16 vs B.5.1 — gestionale visibile online vs software dichiarato
-  if (dataA.gestionaleVisibile === "No" && dataB.b5_1_softwareGestione === "Software dedicato") {
-    incongruenze.push({
-      code: "A.16 vs B.5.1",
-      message: "Nessun gestionale trovato online, ma il centro dichiara di usare un software dedicato",
-    });
-  }
-  if (dataA.gestionaleVisibile === "Si" && dataB.b5_1_softwareGestione === "Nessuno/manuale") {
-    incongruenze.push({
-      code: "A.16 vs B.5.1",
-      message: "Gestionale trovato online, ma il centro dichiara di non usarne uno",
-    });
-  }
-
   // A.8/A.9 vs prezzi dichiarati in call — placeholder, nessun campo B dedicato attualmente
   // (da estendere se si aggiunge una domanda B per i prezzi dichiarati)
 
@@ -75,11 +88,14 @@ export function checkIncongruenze(dataA, dataB) {
 /**
  * Conta i semafori per colore tra le sezioni A e B.
  */
-function contaSemafori(semaforiA, semaforiB) {
+function contaSemafori(semaforiA, semaforiB, campiCopertiEffettivi) {
   const conteggio = { verde: 0, giallo: 0, arancione: 0, rosso: 0, neutro: 0 };
 
   for (const key in semaforiA) {
-    const s = semaforiA[key]?.semaforo;
+    let s = semaforiA[key]?.semaforo;
+    if (key === "campiCoperti" && campiCopertiEffettivi) {
+      s = campiCopertiEffettivi.semaforo;
+    }
     if (s && conteggio[s] !== undefined) conteggio[s]++;
   }
   for (const key in semaforiB) {
@@ -96,12 +112,17 @@ function contaSemafori(semaforiA, semaforiB) {
 export function calcolaAnalisiFinale(dataA, dataB, semaforiA, semaforiB) {
   const koList = checkKO(dataA, dataB, semaforiA, semaforiB);
   const incongruenze = checkIncongruenze(dataA, dataB);
-  const conteggio = contaSemafori(semaforiA, semaforiB);
+  const campiCopertiEffettivi = calcolaCampiCopertiEffettivi(dataA, dataB, semaforiA);
+  const conteggio = contaSemafori(semaforiA, semaforiB, campiCopertiEffettivi);
 
   // Punti arancioni "da risolvere" — esclude quelli che sono gia KO
   const arancioniDettaglio = [];
   for (const key in semaforiA) {
-    if (semaforiA[key]?.semaforo === SEMAFORO.ARANCIONE) arancioniDettaglio.push({ section: "A", code: key });
+    let s = semaforiA[key]?.semaforo;
+    if (key === "campiCoperti" && campiCopertiEffettivi) {
+      s = campiCopertiEffettivi.semaforo;
+    }
+    if (s === SEMAFORO.ARANCIONE) arancioniDettaglio.push({ section: "A", code: key });
   }
   for (const key in semaforiB) {
     if (semaforiB[key]?.semaforo === SEMAFORO.ARANCIONE) arancioniDettaglio.push({ section: "B", code: key });
@@ -132,7 +153,7 @@ export function calcolaAnalisiFinale(dataA, dataB, semaforiA, semaforiB) {
   if (!isNaN(nonAgonistici) && nonAgonistici > 60) {
     segnaliPositivi.push("Alto numero di tesserati non agonistici");
   }
-  if (dataA.gestionaleVisibile === "No" && dataB.b5_1_softwareGestione === "Nessuno/manuale") {
+  if (dataB.b5_1_softwareGestione === "Nessuno/manuale") {
     segnaliPositivi.push("Nessun gestionale attuale: opportunita di adozione PSL");
   }
 

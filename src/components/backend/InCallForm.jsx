@@ -6,7 +6,6 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
 
   const tesseratiNonTrovati = !dataA?.tesseratiRASD;
   const haCampiOutdoor = Number(dataA?.campiTotali) > Number(dataA?.campiCoperti || 0);
-  const gestionaleIdentificato = dataA?.gestionaleVisibile === "Si" ? dataA?.gestionaleBrand : null;
 
   return (
     <div>
@@ -150,11 +149,6 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
       />
 
       <h4>B5 — Gestionale e costi</h4>
-      {gestionaleIdentificato && (
-        <p style={{ fontSize: "0.8rem", color: "#a8b5c2", marginTop: 0 }}>
-          In pre-call abbiamo individuato: <strong>{gestionaleIdentificato}</strong> — confermalo o correggilo qui sotto.
-        </p>
-      )}
       <SelectField
         label="B.5.1 Software di gestione attuale?"
         value={data.b5_1_softwareGestione}
