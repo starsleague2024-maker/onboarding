@@ -15,7 +15,6 @@ export const initialSectionB = {
   // B1 - Campi e vincoli
   b1_4_statoCampiCoperti: "", // "Nessuno" | "Si, copertura fissa" | "Si, copertura stagionale (pallone)" | "Prevista in futuro" -- chiesto se A.6 = 0 o vuoto
   b1_4_quantiCopertiReali: "", // se "Si, ..." quanti campi coperti effettivi
-  b1_0_palloneInvernale: "", // "N/A" | "Si" | "No" -- se in A.6 ci sono campi outdoor, chiedere se in inverno vengono coperti con pallone pressostatico
   b1_1_vincoliFITP: "",        // "Nessuno" | "Alcuni" | "Tutti" -- mostrato solo se A.3 affiliazione include "FITP"
   b1_1_quantiVincolati: "",     // testo, se "Alcuni"
   b1_2_campiDisponibiliPSL: "", // "0" | "1" | "2" | "3+"
@@ -24,21 +23,21 @@ export const initialSectionB = {
   // B2 - Base clienti
   b2_1_prenotazioniSettimana: "", // "<10" | "10-20" | "21-40" | "40+"
   b2_2_canaleComunicazione: "",   // "Nessuno" | "Poco gestito" | "Attivo e aggiornato"
-  b2_3_giocatoriRicorrenti: "",   // "<10" | "10-30" | "30-60" | "60+"
-  b2_4_torneiEsterni: "",         // "No" | "Minoranza" | "Buona parte"
+  b2_2_canali: [],                 // multi-select: "WhatsApp" | "Email" | "Messaggi privati" | "Social" -- mostrato se b2_2 != "Nessuno"
+  b2_4_affluenzaEventi: "",        // "0%" | "1-25%" | "26-50%" | "51-75%" | "76-100%" -- affluenza agli eventi organizzati dal centro, rispetto ai tesserati
+  b2_4_tipiEventi: [],             // multi-select: "Americani" | "Tornei" | "Campionati" | "Altro"
 
   // B3 - Stagionalita
   b3_1_stagionalita: "", // "Tutto l'anno" | "Meglio estate" | "Meglio inverno" | "Inverno debole" | "Estate debole" | "Periodo morto"
   b3_1_periodoMorto: "", // testo libero se "Periodo morto"
 
   // B4 - Staff
-  b4_1_personeStaff: "",        // "Solo titolare" | "+1" | "3-5" | "5+"
+  b4_1_personeStaff: "",        // numero (campo libero numerico)
   b4_2_referentePSL: "",         // "No" | "Titolare limitato" | "Staff dedicato"
   b4_3_maestriStabili: "",       // "No" | "A chiamata" | "Stabili con contratto"
-  b4_4_esperienzaEventi: "",     // "Mai" | "Occasionale" | "Regolare"
 
   // B5 - Gestionale e costi
-  b5_1_softwareGestione: "",     // "Nessuno/manuale" | "Excel" | "Software dedicato" | "Piattaforma prenotazioni"
+  b5_1_softwareGestione: "",     // "Nessuno/manuale" | "Excel" | "Gestionale di proprieta del centro" | "Piattaforma prenotazioni"
   b5_1_softwareNome: "",          // testo se "Software dedicato" - backend tendina
   b5_2_costoSoftwareAnnuale: "",
   b5_3_aperturaCambioSoftware: "", // "No" | "Con resistenze" | "Si"
@@ -69,24 +68,22 @@ export const OPZIONI_B = {
   b1_4_statoCampiCoperti: ["Nessuno", "Si, copertura fissa", "Si, copertura stagionale (pallone)", "Prevista in futuro"],
   b0_1_appGestionaleUsata: ["Si", "No", "In parte"],
   b0_1_appGestionaleMotivo: ["Non si trovano bene", "Non sanno sfruttarla", "I giocatori non la usano", "Altro"],
-  b1_0_palloneInvernale: ["N/A", "Si", "No"],
   b1_1_vincoliFITP: ["Nessuno", "Alcuni", "Tutti"],
   b1_2_campiDisponibiliPSL: ["0", "1", "2", "3+"],
   b1_3_clausolaResponsabilita: ["N/A", "Si", "No"],
 
   b2_1_prenotazioniSettimana: ["<10", "10-20", "21-40", "40+"],
   b2_2_canaleComunicazione: ["Nessuno", "Poco gestito", "Attivo e aggiornato"],
-  b2_3_giocatoriRicorrenti: ["<10", "10-30", "30-60", "60+"],
-  b2_4_torneiEsterni: ["No", "Minoranza", "Buona parte"],
+  b2_2_canali: ["WhatsApp", "Email", "Messaggi privati", "Social"],
+  b2_4_affluenzaEventi: ["0%", "1-25%", "26-50%", "51-75%", "76-100%"],
+  b2_4_tipiEventi: ["Americani", "Tornei", "Campionati", "Altro"],
 
   b3_1_stagionalita: ["Tutto l'anno", "Meglio estate", "Meglio inverno", "Inverno debole", "Estate debole", "Periodo morto"],
 
-  b4_1_personeStaff: ["Solo titolare", "+1", "3-5", "5+"],
   b4_2_referentePSL: ["No", "Titolare limitato", "Staff dedicato"],
   b4_3_maestriStabili: ["No", "A chiamata", "Stabili con contratto"],
-  b4_4_esperienzaEventi: ["Mai", "Occasionale", "Regolare"],
 
-  b5_1_softwareGestione: ["Nessuno/manuale", "Excel", "Software dedicato", "Piattaforma prenotazioni"],
+  b5_1_softwareGestione: ["Nessuno/manuale", "Excel", "Gestionale di proprieta del centro", "Piattaforma prenotazioni"],
   b5_1_softwareNomeBrand: ["Playtomic", "Wansport", "Sport Clubbi", "Due Palleggi", "Altro"],
   b5_3_aperturaCambioSoftware: ["No", "Con resistenze", "Si"],
   b5_4_migrazioneEPS: ["N/A", "Si", "No"],
@@ -125,13 +122,6 @@ export function calcolaSemaforiB(data) {
   // Solo informativo: nessun semaforo (Si/No/In parte sono tutti segnali positivi per noi)
   result.b0_1_appGestionaleUsata = sem(SEMAFORO.NEUTRO);
 
-  // B1.0 pallone pressostatico invernale
-  switch (data.b1_0_palloneInvernale) {
-    case "N/A": result.b1_0_palloneInvernale = sem(SEMAFORO.NEUTRO); break;
-    case "Si": result.b1_0_palloneInvernale = sem(SEMAFORO.VERDE); break;
-    case "No": result.b1_0_palloneInvernale = sem(SEMAFORO.NEUTRO); break;
-    default: result.b1_0_palloneInvernale = sem(SEMAFORO.NEUTRO);
-  }
 
   // B1.1 vincoli FITP
   switch (data.b1_1_vincoliFITP) {
@@ -175,21 +165,41 @@ export function calcolaSemaforiB(data) {
     default: result.b2_2_canaleComunicazione = sem(SEMAFORO.NEUTRO);
   }
 
-  // B2.3 giocatori ricorrenti
-  switch (data.b2_3_giocatoriRicorrenti) {
-    case "<10": result.b2_3_giocatoriRicorrenti = sem(SEMAFORO.ROSSO); break;
-    case "10-30": result.b2_3_giocatoriRicorrenti = sem(SEMAFORO.ARANCIONE); break;
-    case "30-60":
-    case "60+": result.b2_3_giocatoriRicorrenti = sem(SEMAFORO.VERDE); break;
-    default: result.b2_3_giocatoriRicorrenti = sem(SEMAFORO.NEUTRO);
+  // B2.2 canali utilizzati: standard minimo = almeno il gruppo WhatsApp
+  {
+    const canali = data.b2_2_canali || [];
+    let semaforo = SEMAFORO.NEUTRO;
+    if (data.b2_2_canaleComunicazione && data.b2_2_canaleComunicazione !== "Nessuno") {
+      if (canali.length === 0) semaforo = SEMAFORO.ARANCIONE;
+      else if (canali.includes("WhatsApp") && canali.length === 1) semaforo = SEMAFORO.GIALLO;
+      else if (canali.includes("WhatsApp")) semaforo = SEMAFORO.VERDE;
+      else semaforo = SEMAFORO.ARANCIONE;
+    }
+    result.b2_2_canali = sem(semaforo);
   }
 
-  // B2.4 tornei esterni
-  switch (data.b2_4_torneiEsterni) {
-    case "No": result.b2_4_torneiEsterni = sem(SEMAFORO.ARANCIONE); break;
-    case "Minoranza": result.b2_4_torneiEsterni = sem(SEMAFORO.GIALLO); break;
-    case "Buona parte": result.b2_4_torneiEsterni = sem(SEMAFORO.VERDE); break;
-    default: result.b2_4_torneiEsterni = sem(SEMAFORO.NEUTRO);
+  // B2.3 giocatori ricorrenti
+  // B2.4 affluenza agli eventi organizzati dal centro (% sui tesserati)
+  switch (data.b2_4_affluenzaEventi) {
+    case "0%": result.b2_4_affluenzaEventi = sem(SEMAFORO.ROSSO); break;
+    case "1-25%": result.b2_4_affluenzaEventi = sem(SEMAFORO.ARANCIONE); break;
+    case "26-50%": result.b2_4_affluenzaEventi = sem(SEMAFORO.GIALLO); break;
+    case "51-75%":
+    case "76-100%": result.b2_4_affluenzaEventi = sem(SEMAFORO.VERDE); break;
+    default: result.b2_4_affluenzaEventi = sem(SEMAFORO.NEUTRO);
+  }
+
+  // B2.4b tipi di eventi organizzati: piu tipi = meglio
+  {
+    const tipi = data.b2_4_tipiEventi || [];
+    let semaforo = SEMAFORO.NEUTRO;
+    if (data.b2_4_tipiEventi !== undefined) {
+      if (tipi.length === 0) semaforo = SEMAFORO.ROSSO;
+      else if (tipi.length === 1) semaforo = SEMAFORO.ARANCIONE;
+      else if (tipi.length === 2) semaforo = SEMAFORO.GIALLO;
+      else semaforo = SEMAFORO.VERDE;
+    }
+    result.b2_4_tipiEventi = sem(semaforo);
   }
 
   // B3.1 stagionalita
@@ -204,12 +214,15 @@ export function calcolaSemaforiB(data) {
   }
 
   // B4.1 persone staff
-  switch (data.b4_1_personeStaff) {
-    case "Solo titolare": result.b4_1_personeStaff = sem(SEMAFORO.ROSSO); break;
-    case "+1": result.b4_1_personeStaff = sem(SEMAFORO.ARANCIONE); break;
-    case "3-5":
-    case "5+": result.b4_1_personeStaff = sem(SEMAFORO.VERDE); break;
-    default: result.b4_1_personeStaff = sem(SEMAFORO.NEUTRO);
+  {
+    const n = Number(data.b4_1_personeStaff);
+    let semaforo = SEMAFORO.NEUTRO;
+    if (data.b4_1_personeStaff !== "" && !isNaN(n)) {
+      if (n <= 1) semaforo = SEMAFORO.ROSSO;
+      else if (n === 2) semaforo = SEMAFORO.ARANCIONE;
+      else semaforo = SEMAFORO.VERDE;
+    }
+    result.b4_1_personeStaff = sem(semaforo);
   }
 
   // B4.2 referente PSL
@@ -228,19 +241,11 @@ export function calcolaSemaforiB(data) {
     default: result.b4_3_maestriStabili = sem(SEMAFORO.NEUTRO);
   }
 
-  // B4.4 esperienza eventi
-  switch (data.b4_4_esperienzaEventi) {
-    case "Mai": result.b4_4_esperienzaEventi = sem(SEMAFORO.ARANCIONE); break;
-    case "Occasionale": result.b4_4_esperienzaEventi = sem(SEMAFORO.GIALLO); break;
-    case "Regolare": result.b4_4_esperienzaEventi = sem(SEMAFORO.VERDE); break;
-    default: result.b4_4_esperienzaEventi = sem(SEMAFORO.NEUTRO);
-  }
-
   // B5.1 software gestione
   switch (data.b5_1_softwareGestione) {
     case "Nessuno/manuale":
     case "Excel": result.b5_1_softwareGestione = sem(SEMAFORO.VERDE); break;
-    case "Software dedicato": result.b5_1_softwareGestione = sem(SEMAFORO.ARANCIONE); break;
+    case "Gestionale di proprieta del centro": result.b5_1_softwareGestione = sem(SEMAFORO.ARANCIONE); break;
     case "Piattaforma prenotazioni": result.b5_1_softwareGestione = sem(SEMAFORO.GIALLO); break;
     default: result.b5_1_softwareGestione = sem(SEMAFORO.NEUTRO);
   }

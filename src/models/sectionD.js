@@ -28,21 +28,7 @@ export function calcolaCampiCopertiEffettivi(dataA, dataB, semaforiA) {
     return { semaforo: SEMAFORO.ROSSO, needsCallFlag: false, isKO: true };
   }
 
-  const palloneAttivo = dataB.b1_0_palloneInvernale === "Si";
-
-  if (!palloneAttivo) {
-    return semaforiA.campiCoperti;
-  }
-
-  const totali = Number(dataA.campiTotali);
-  let semaforo = SEMAFORO.NEUTRO;
-  if (!isNaN(totali) && dataA.campiTotali !== "") {
-    if (totali === 1) semaforo = SEMAFORO.ROSSO;
-    else if (totali === 2) semaforo = SEMAFORO.ARANCIONE;
-    else semaforo = SEMAFORO.VERDE;
-  }
-
-  return { semaforo, needsCallFlag: false, isKO: false };
+  return semaforiA.campiCoperti;
 }
 
 /**

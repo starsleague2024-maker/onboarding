@@ -1,11 +1,10 @@
 import { OPZIONI_B } from "../../models/sectionB";
-import { TextField, NumberField, SelectField, TextAreaField } from "../Fields";
+import { TextField, NumberField, SelectField, MultiSelectField, TextAreaField } from "../Fields";
 
 export default function InCallForm({ data, semafori, onChange, dataA }) {
   const set = (field) => (value) => onChange({ ...data, [field]: value });
 
   const tesseratiNonTrovati = !dataA?.tesseratiRASD;
-  const haCampiOutdoor = Number(dataA?.campiTotali) > Number(dataA?.campiCoperti || 0);
   const usaAppGestionale = dataA?.appPropria === "Si (app del gestionale)";
   const zeroCampiCoperti = dataA?.campiCoperti === "" || Number(dataA?.campiCoperti) === 0;
   const hasFITP = (dataA?.affiliazione || []).includes("FITP");
@@ -94,19 +93,6 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         </>
       )}
 
-      {haCampiOutdoor && (
-        <SelectField
-          label="B.1.0 In inverno montate il pallone pressostatico sui campi scoperti?"
-          value={data.b1_0_palloneInvernale}
-          onChange={set("b1_0_palloneInvernale")}
-          options={OPZIONI_B.b1_0_palloneInvernale}
-          semaforo={semafori.b1_0_palloneInvernale?.semaforo}
-
-        sectionKey="sectionB"
-        fieldKey="b1_0_palloneInvernale"
-        />
-      )}
-
       <SelectField
         label="B.1.2 Campi coperti disponibili per eventi PSL?"
         value={data.b1_2_campiDisponibiliPSL}
@@ -176,27 +162,39 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         sectionKey="sectionB"
         fieldKey="b2_2_canaleComunicazione"
       />
+      {(data.b2_2_canaleComunicazione === "Poco gestito" || data.b2_2_canaleComunicazione === "Attivo e aggiornato") && (
+        <MultiSelectField
+          label="↳ Quali canali usano? (di standard basta il gruppo WhatsApp)"
+          values={data.b2_2_canali}
+          onChange={set("b2_2_canali")}
+          options={OPZIONI_B.b2_2_canali}
+          semaforo={semafori.b2_2_canali?.semaforo}
+
+          sectionKey="sectionB"
+          fieldKey="b2_2_canali"
+        />
+      )}
 
       <SelectField
-        label="B.2.3 Giocatori che tornano 2+ volte/settimana?"
-        value={data.b2_3_giocatoriRicorrenti}
-        onChange={set("b2_3_giocatoriRicorrenti")}
-        options={OPZIONI_B.b2_3_giocatoriRicorrenti}
-        semaforo={semafori.b2_3_giocatoriRicorrenti?.semaforo}
+        label="B.2.4 Affluenza agli eventi organizzati dal centro (rispetto ai tesserati)"
+        value={data.b2_4_affluenzaEventi}
+        onChange={set("b2_4_affluenzaEventi")}
+        options={OPZIONI_B.b2_4_affluenzaEventi}
+        semaforo={semafori.b2_4_affluenzaEventi?.semaforo}
 
         sectionKey="sectionB"
-        fieldKey="b2_3_giocatoriRicorrenti"
+        fieldKey="b2_4_affluenzaEventi"
       />
 
-      <SelectField
-        label="B.2.4 Clienti che partecipano a tornei esterni?"
-        value={data.b2_4_torneiEsterni}
-        onChange={set("b2_4_torneiEsterni")}
-        options={OPZIONI_B.b2_4_torneiEsterni}
-        semaforo={semafori.b2_4_torneiEsterni?.semaforo}
+      <MultiSelectField
+        label="B.2.4b Che tipo di eventi organizza il centro?"
+        values={data.b2_4_tipiEventi}
+        onChange={set("b2_4_tipiEventi")}
+        options={OPZIONI_B.b2_4_tipiEventi}
+        semaforo={semafori.b2_4_tipiEventi?.semaforo}
 
         sectionKey="sectionB"
-        fieldKey="b2_4_torneiEsterni"
+        fieldKey="b2_4_tipiEventi"
       />
 
       <h4>B3 — Stagionalita</h4>
@@ -225,11 +223,10 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
       </p>
 
       <h4>B4 — Staff</h4>
-      <SelectField
-        label="B.4.1 Persone che lavorano nel centro?"
+      <NumberField
+        label="B.4.1 Quante persone lavorano nel centro?"
         value={data.b4_1_personeStaff}
         onChange={set("b4_1_personeStaff")}
-        options={OPZIONI_B.b4_1_personeStaff}
         semaforo={semafori.b4_1_personeStaff?.semaforo}
 
         sectionKey="sectionB"
@@ -255,16 +252,6 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         sectionKey="sectionB"
         fieldKey="b4_3_maestriStabili"
       />
-      <SelectField
-        label="B.4.4 Esperienza organizzazione eventi/tornei?"
-        value={data.b4_4_esperienzaEventi}
-        onChange={set("b4_4_esperienzaEventi")}
-        options={OPZIONI_B.b4_4_esperienzaEventi}
-        semaforo={semafori.b4_4_esperienzaEventi?.semaforo}
-
-        sectionKey="sectionB"
-        fieldKey="b4_4_esperienzaEventi"
-      />
 
       <h4>B5 — Gestionale e costi</h4>
       <SelectField
@@ -277,7 +264,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         sectionKey="sectionB"
         fieldKey="b5_1_softwareGestione"
       />
-      {data.b5_1_softwareGestione === "Software dedicato" && (
+      {data.b5_1_softwareGestione === "Gestionale di proprieta del centro" && (
         <SelectField
           label="↳ Quale? (backend)"
           value={data.b5_1_softwareNome}

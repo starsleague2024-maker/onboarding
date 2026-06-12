@@ -80,8 +80,8 @@ export function calcolaRadar({ semaforiA, semaforiB, campiCopertiEffettivi }) {
   const community = avgScores([
     SEM_SCORE[sA.tesseratiRASD?.semaforo],
     semaforiB ? SEM_SCORE[sB.b2_1_prenotazioniSettimana?.semaforo] : null,
-    semaforiB ? SEM_SCORE[sB.b2_3_giocatoriRicorrenti?.semaforo] : null,
-    semaforiB ? SEM_SCORE[sB.b4_4_esperienzaEventi?.semaforo] : null,
+    semaforiB ? SEM_SCORE[sB.b2_4_affluenzaEventi?.semaforo] : null,
+    semaforiB ? SEM_SCORE[sB.b2_4_tipiEventi?.semaforo] : null,
   ]);
 
   const raw = [struttura, affiliazione, presenzaOnline, pricing, tecnologia, community];
@@ -227,8 +227,8 @@ export function generaLegenda({ dataA, dataB, semaforiA, semaforiB, scores }) {
       daMigliorare = "Dato completo disponibile solo dopo la call.";
       daChiedere = "Chiedere numero tesserati, prenotazioni settimanali, giocatori ricorrenti ed esperienza con eventi/tornei.";
     } else {
-      stato += ` Prenotazioni/settimana: ${dataB.b2_1_prenotazioniSettimana || "n/d"}. Giocatori ricorrenti: ${dataB.b2_3_giocatoriRicorrenti || "n/d"}.`;
-      if (sB.b2_1_prenotazioniSettimana?.semaforo === SEMAFORO.ROSSO || sB.b2_3_giocatoriRicorrenti?.semaforo === SEMAFORO.ROSSO) {
+      stato += ` Prenotazioni/settimana: ${dataB.b2_1_prenotazioniSettimana || "n/d"}. Affluenza eventi: ${dataB.b2_4_affluenzaEventi || "n/d"}.`;
+      if (sB.b2_1_prenotazioniSettimana?.semaforo === SEMAFORO.ROSSO || sB.b2_4_affluenzaEventi?.semaforo === SEMAFORO.ROSSO) {
         daMigliorare = "Base clienti ancora limitata: PSL puo aiutare a portare nuovi giocatori.";
         daChiedere = "Illustrare come gli eventi PSL aumentano l'affluenza nelle fasce vuote.";
       } else {
