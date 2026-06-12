@@ -55,6 +55,7 @@ export default function PreCallForm({ data, semafori, onChange }) {
         options={OPZIONI.formaGiuridica}
         semaforo={semafori.formaGiuridica?.semaforo}
         needsCallFlag={semafori.formaGiuridica?.needsCallFlag}
+        exclusiveOptions={["Non trovata"]}
 
         sectionKey="sectionA"
         fieldKey="formaGiuridica"
@@ -67,6 +68,7 @@ export default function PreCallForm({ data, semafori, onChange }) {
         options={OPZIONI.affiliazione}
         semaforo={semafori.affiliazione?.semaforo}
         needsCallFlag={semafori.affiliazione?.needsCallFlag}
+        exclusiveOptions={["Non trovata"]}
 
         sectionKey="sectionA"
         fieldKey="affiliazione"

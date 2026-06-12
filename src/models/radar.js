@@ -228,7 +228,11 @@ export function generaLegenda({ dataA, dataB, semaforiA, semaforiB, scores }) {
       daChiedere = "Chiedere numero tesserati, prenotazioni settimanali, giocatori ricorrenti ed esperienza con eventi/tornei.";
     } else {
       stato += ` Prenotazioni/settimana: ${dataB.b2_1_prenotazioniSettimana || "n/d"}. Affluenza eventi: ${dataB.b2_4_affluenzaEventi || "n/d"}.`;
-      if (sB.b2_1_prenotazioniSettimana?.semaforo === SEMAFORO.ROSSO || sB.b2_4_affluenzaEventi?.semaforo === SEMAFORO.ROSSO) {
+      if (dataB.b8_1_problemaPrincipale === "Fasce vuote") {
+        stato += " Problema principale segnalato: fasce orarie vuote.";
+        daMigliorare = "Riempire le fasce orarie vuote.";
+        daChiedere = "Presentare la soluzione PSL basata su gamification tramite app per riempire le fasce vuote con sfide ed eventi.";
+      } else if (sB.b2_1_prenotazioniSettimana?.semaforo === SEMAFORO.ROSSO || sB.b2_4_affluenzaEventi?.semaforo === SEMAFORO.ROSSO) {
         daMigliorare = "Base clienti ancora limitata: PSL puo aiutare a portare nuovi giocatori.";
         daChiedere = "Illustrare come gli eventi PSL aumentano l'affluenza nelle fasce vuote.";
       } else {

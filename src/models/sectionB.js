@@ -34,7 +34,7 @@ export const initialSectionB = {
   // B4 - Staff
   b4_1_personeStaff: "",        // numero (campo libero numerico)
   b4_2_referentePSL: "",         // "No" | "Titolare limitato" | "Staff dedicato"
-  b4_3_maestriStabili: "",       // "No" | "Si, figure fisse"
+  b4_3_maestriStabili: "",       // "No" | "A chiamata" | "Si, figure fisse"
 
   // B5 - Gestionale e costi
   b5_1_softwareGestione: "",     // "Nessuno/manuale" | "Excel" | "Gestionale di proprieta del centro" | "Piattaforma prenotazioni"
@@ -83,7 +83,7 @@ export const OPZIONI_B = {
   b3_1_stagionalita: ["Tutto l'anno", "Meglio estate", "Meglio inverno", "Inverno debole", "Estate debole", "Periodo morto"],
 
   b4_2_referentePSL: ["No", "Titolare limitato", "Staff dedicato"],
-  b4_3_maestriStabili: ["No", "Si, figure fisse"],
+  b4_3_maestriStabili: ["No", "A chiamata", "Si, figure fisse"],
 
   b5_1_softwareGestione: ["Nessuno/manuale", "Excel", "Gestionale di proprieta del centro", "Piattaforma prenotazioni"],
   b5_1_softwareNomeBrand: ["Playtomic", "Wansport", "Sport Clubbi", "Due Palleggi", "Altro"],
@@ -237,7 +237,8 @@ export function calcolaSemaforiB(data) {
 
   // B4.3 maestri stabili
   switch (data.b4_3_maestriStabili) {
-    case "No": result.b4_3_maestriStabili = sem(SEMAFORO.ARANCIONE); break;
+    case "No": result.b4_3_maestriStabili = sem(SEMAFORO.ROSSO); break;
+    case "A chiamata": result.b4_3_maestriStabili = sem(SEMAFORO.ARANCIONE); break;
     case "Si, figure fisse": result.b4_3_maestriStabili = sem(SEMAFORO.VERDE); break;
     default: result.b4_3_maestriStabili = sem(SEMAFORO.NEUTRO);
   }

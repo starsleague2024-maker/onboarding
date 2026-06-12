@@ -356,7 +356,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
           <NumberField
             label="B.5.6 % prenotazioni ONLINE"
             value={data.b5_6_percOnline}
-            onChange={set("b5_6_percOnline")}
+            onChange={(v) => onChange({ ...data, b5_6_percOnline: v, b5_6_percDesk: v === "" ? "" : String(Math.max(0, 100 - Number(v))) })}
             suffix="%"
 
             sectionKey="sectionB"
@@ -367,7 +367,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
           <NumberField
             label="↳ % prenotazioni DESK (WA/altri canali)"
             value={data.b5_6_percDesk}
-            onChange={set("b5_6_percDesk")}
+            onChange={(v) => onChange({ ...data, b5_6_percDesk: v, b5_6_percOnline: v === "" ? "" : String(Math.max(0, 100 - Number(v))) })}
             suffix="%"
 
             sectionKey="sectionB"

@@ -101,14 +101,18 @@ export function SelectField({ label, value, onChange, options, semaforo, needsCa
   );
 }
 
-export function MultiSelectField({ label, values, onChange, options, semaforo, needsCallFlag, sectionKey, fieldKey }) {
+export function MultiSelectField({ label, values, onChange, options, semaforo, needsCallFlag, sectionKey, fieldKey, exclusiveOptions = [] }) {
   const selected = Array.isArray(values) ? values : [];
 
   function toggle(opt) {
     if (selected.includes(opt)) {
       onChange(selected.filter((v) => v !== opt));
+    } else if (exclusiveOptions.includes(opt)) {
+      // selecting an exclusive option clears everything else
+      onChange([opt]);
     } else {
-      onChange([...selected, opt]);
+      // selecting a normal option clears any exclusive option
+      onChange([...selected.filter((v) => !exclusiveOptions.includes(v)), opt]);
     }
   }
 
@@ -126,11 +130,13 @@ export function MultiSelectField({ label, values, onChange, options, semaforo, n
       <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
         {options.map((opt) => {
           const active = selected.includes(opt);
+          const hasExclusiveSelected = exclusiveOptions.some((ex) => ex !== opt && selected.includes(ex));
           return (
             <button
               key={opt}
               type="button"
               onClick={() => toggle(opt)}
+              disabled={hasExclusiveSelected}
               style={{
                 padding: "6px 12px",
                 borderRadius: "20px",
@@ -138,8 +144,9 @@ export function MultiSelectField({ label, values, onChange, options, semaforo, n
                 background: active ? COLORS.gold : COLORS.cardLight,
                 color: active ? COLORS.navy : COLORS.text,
                 fontSize: "0.8rem",
-                cursor: "pointer",
+                cursor: hasExclusiveSelected ? "not-allowed" : "pointer",
                 fontWeight: active ? 600 : 400,
+                opacity: hasExclusiveSelected ? 0.4 : 1,
               }}
             >
               {opt}
