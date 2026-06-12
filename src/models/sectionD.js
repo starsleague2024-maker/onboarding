@@ -10,17 +10,22 @@ import { SEMAFORO } from "./sectionA";
  * a tutti gli effetti per il KO e il conteggio.
  */
 export function calcolaCampiCopertiEffettivi(dataA, dataB, semaforiA) {
-  // B0.2: in call e' emerso che il centro ha effettivamente campi coperti
-  // nonostante A.6 fosse 0/vuoto
-  if (dataB.b0_2_confermaZeroCoperti === "In realta ne ha") {
-    const n = Number(dataB.b0_2_quantiCopertiReali);
+  // B1.4: in call e' emerso lo stato reale dei campi coperti, diverso da A.6
+  if (dataB.b1_4_statoCampiCoperti === "Si, copertura fissa" || dataB.b1_4_statoCampiCoperti === "Si, copertura stagionale (pallone)") {
+    const n = Number(dataB.b1_4_quantiCopertiReali);
     let semaforo = SEMAFORO.NEUTRO;
-    if (!isNaN(n) && dataB.b0_2_quantiCopertiReali !== "") {
+    if (!isNaN(n) && dataB.b1_4_quantiCopertiReali !== "") {
       if (n === 0) semaforo = SEMAFORO.ROSSO;
       else if (n === 1) semaforo = SEMAFORO.ARANCIONE;
       else semaforo = SEMAFORO.VERDE;
     }
     return { semaforo, needsCallFlag: false, isKO: n === 0 };
+  }
+  if (dataB.b1_4_statoCampiCoperti === "Prevista in futuro") {
+    return { semaforo: SEMAFORO.ARANCIONE, needsCallFlag: false, isKO: false };
+  }
+  if (dataB.b1_4_statoCampiCoperti === "Nessuno") {
+    return { semaforo: SEMAFORO.ROSSO, needsCallFlag: false, isKO: true };
   }
 
   const palloneAttivo = dataB.b1_0_palloneInvernale === "Si";

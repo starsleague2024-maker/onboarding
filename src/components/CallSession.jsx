@@ -3,7 +3,7 @@ import { storage } from "../data";
 import { initialSectionA, calcolaSemaforiA } from "../models/sectionA";
 import { initialSectionB, calcolaSemaforiB } from "../models/sectionB";
 import { calcolaCostiAttuali, calcolaCostiPSL, generaConfrontoFinale, PSL_PACKAGE_DEFAULT } from "../models/sectionC";
-import { calcolaAnalisiFinale } from "../models/sectionD";
+import { calcolaAnalisiFinale, calcolaCampiCopertiEffettivi } from "../models/sectionD";
 
 import PreCallForm from "./backend/PreCallForm";
 import SummaryA from "./backend/SummaryA";
@@ -104,6 +104,7 @@ export default function CallSession({ sessionId, onBack }) {
   const semaforiA = calcolaSemaforiA(session.sectionA);
   const semaforiB = calcolaSemaforiB(session.sectionB);
   const analisi = calcolaAnalisiFinale(session.sectionA, session.sectionB, semaforiA, semaforiB);
+  const campiCopertiEffettivi = calcolaCampiCopertiEffettivi(session.sectionA, session.sectionB, semaforiA);
   const costiAttuali = calcolaCostiAttuali(session.sectionA, session.sectionB);
   const costiPSL = calcolaCostiPSL(session.sectionA, session.sectionB, session.pslPackage, costiAttuali);
   const confronto = generaConfrontoFinale(session.sectionA, session.sectionB, session.pslPackage);
@@ -186,6 +187,9 @@ export default function CallSession({ sessionId, onBack }) {
                 costiAttuali={costiAttuali}
                 costiPSL={costiPSL}
                 onChange={handleSessionMetaChange}
+                semaforiA={semaforiA}
+                semaforiB={semaforiB}
+                campiCopertiEffettivi={campiCopertiEffettivi}
               />
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "16px", gap: "8px", flexWrap: "wrap" }}>
                 <StepNav onBack={goBack} backLabel="← Torna a In-call" />

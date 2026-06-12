@@ -8,35 +8,10 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
   const haCampiOutdoor = Number(dataA?.campiTotali) > Number(dataA?.campiCoperti || 0);
   const usaAppGestionale = dataA?.appPropria === "Si (app del gestionale)";
   const zeroCampiCoperti = dataA?.campiCoperti === "" || Number(dataA?.campiCoperti) === 0;
+  const hasFITP = (dataA?.affiliazione || []).includes("FITP");
 
   return (
     <div>
-
-      {zeroCampiCoperti && (
-        <>
-          <h4>B0 — Campi coperti</h4>
-          <SelectField
-            label="In pre-call non risultano campi coperti: e' corretto?"
-            value={data.b0_2_confermaZeroCoperti}
-            onChange={set("b0_2_confermaZeroCoperti")}
-            options={OPZIONI_B.b0_2_confermaZeroCoperti}
-            semaforo={semafori.b0_2_confermaZeroCoperti?.semaforo}
-
-            sectionKey="sectionB"
-            fieldKey="b0_2_confermaZeroCoperti"
-          />
-          {data.b0_2_confermaZeroCoperti === "In realta ne ha" && (
-            <NumberField
-              label="↳ Quanti campi coperti ha effettivamente?"
-              value={data.b0_2_quantiCopertiReali}
-              onChange={set("b0_2_quantiCopertiReali")}
-
-              sectionKey="sectionB"
-              fieldKey="b0_2_quantiCopertiReali"
-            />
-          )}
-        </>
-      )}
 
       {tesseratiNonTrovati && (
         <>
@@ -66,10 +41,10 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         sectionKey="sectionB"
         fieldKey="b0_1_appGestionaleUsata"
           />
-          {data.b0_1_appGestionaleUsata === "No" && (
+          {(data.b0_1_appGestionaleUsata === "No" || data.b0_1_appGestionaleUsata === "In parte") && (
             <>
               <SelectField
-                label="↳ Perche non viene utilizzata?"
+                label="↳ Perche non viene utilizzata (o non del tutto)?"
                 value={data.b0_1_appGestionaleMotivo}
                 onChange={set("b0_1_appGestionaleMotivo")}
                 options={OPZIONI_B.b0_1_appGestionaleMotivo}
@@ -94,6 +69,31 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
 
       <h4>B1 — Campi e vincoli</h4>
 
+      {zeroCampiCoperti && (
+        <>
+          <SelectField
+            label="In pre-call non risultano campi coperti: qual e' la situazione reale?"
+            value={data.b1_4_statoCampiCoperti}
+            onChange={set("b1_4_statoCampiCoperti")}
+            options={OPZIONI_B.b1_4_statoCampiCoperti}
+            semaforo={semafori.b1_4_statoCampiCoperti?.semaforo}
+
+            sectionKey="sectionB"
+            fieldKey="b1_4_statoCampiCoperti"
+          />
+          {(data.b1_4_statoCampiCoperti === "Si, copertura fissa" || data.b1_4_statoCampiCoperti === "Si, copertura stagionale (pallone)") && (
+            <NumberField
+              label="↳ Quanti campi coperti ha effettivamente?"
+              value={data.b1_4_quantiCopertiReali}
+              onChange={set("b1_4_quantiCopertiReali")}
+
+              sectionKey="sectionB"
+              fieldKey="b1_4_quantiCopertiReali"
+            />
+          )}
+        </>
+      )}
+
       {haCampiOutdoor && (
         <SelectField
           label="B.1.0 In inverno montate il pallone pressostatico sui campi scoperti?"
@@ -107,6 +107,19 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         />
       )}
 
+      <SelectField
+        label="B.1.2 Campi coperti disponibili per eventi PSL?"
+        value={data.b1_2_campiDisponibiliPSL}
+        onChange={set("b1_2_campiDisponibiliPSL")}
+        options={OPZIONI_B.b1_2_campiDisponibiliPSL}
+        semaforo={semafori.b1_2_campiDisponibiliPSL?.semaforo}
+
+        sectionKey="sectionB"
+        fieldKey="b1_2_campiDisponibiliPSL"
+      />
+
+      {hasFITP && (
+      <>
       <SelectField
         label="B.1.1 Campi coperti vincolati FITP/altri EPS?"
         value={data.b1_1_vincoliFITP}
@@ -129,17 +142,6 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
       )}
 
       <SelectField
-        label="B.1.2 Campi coperti disponibili per eventi PSL?"
-        value={data.b1_2_campiDisponibiliPSL}
-        onChange={set("b1_2_campiDisponibiliPSL")}
-        options={OPZIONI_B.b1_2_campiDisponibiliPSL}
-        semaforo={semafori.b1_2_campiDisponibiliPSL?.semaforo}
-
-        sectionKey="sectionB"
-        fieldKey="b1_2_campiDisponibiliPSL"
-      />
-
-      <SelectField
         label="B.1.3 Se campi vincolati FITP: disposti a clausola responsabilita contrattuale?"
         value={data.b1_3_clausolaResponsabilita}
         onChange={set("b1_3_clausolaResponsabilita")}
@@ -149,6 +151,8 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         sectionKey="sectionB"
         fieldKey="b1_3_clausolaResponsabilita"
       />
+      </>
+      )}
 
       <h4>B2 — Base clienti reale</h4>
       <SelectField

@@ -8,15 +8,15 @@ export const initialSectionB = {
   b0_tesseratiTotali: "", // chiesto qui solo se A.4 non trovato
 
   // B0.1 - Se A.18 = "Si (app del gestionale)": viene effettivamente utilizzata?
-  b0_1_appGestionaleUsata: "", // "N/A" | "Si" | "No"
+  b0_1_appGestionaleUsata: "", // "Si" | "No" | "In parte" -- solo informativo, nessun semaforo
   b0_1_appGestionaleMotivo: "", // "Non si trovano bene" | "Non sanno sfruttarla" | "I giocatori non la usano" | "Altro"
   b0_1_appGestionaleMotivoAltro: "", // testo libero se "Altro"
 
   // B1 - Campi e vincoli
-  b0_2_confermaZeroCoperti: "", // "N/A" | "Confermato 0" | "In realta ne ha" -- chiesto se A.6 = 0 o vuoto, per confermare il dato
-  b0_2_quantiCopertiReali: "", // se "In realta ne ha", quanti
+  b1_4_statoCampiCoperti: "", // "Nessuno" | "Si, copertura fissa" | "Si, copertura stagionale (pallone)" | "Prevista in futuro" -- chiesto se A.6 = 0 o vuoto
+  b1_4_quantiCopertiReali: "", // se "Si, ..." quanti campi coperti effettivi
   b1_0_palloneInvernale: "", // "N/A" | "Si" | "No" -- se in A.6 ci sono campi outdoor, chiedere se in inverno vengono coperti con pallone pressostatico
-  b1_1_vincoliFITP: "",        // "Nessuno" | "Alcuni" | "Tutti"
+  b1_1_vincoliFITP: "",        // "Nessuno" | "Alcuni" | "Tutti" -- mostrato solo se A.3 affiliazione include "FITP"
   b1_1_quantiVincolati: "",     // testo, se "Alcuni"
   b1_2_campiDisponibiliPSL: "", // "0" | "1" | "2" | "3+"
   b1_3_clausolaResponsabilita: "", // "N/A" | "Si" | "No"
@@ -66,8 +66,8 @@ export const initialSectionB = {
 };
 
 export const OPZIONI_B = {
-  b0_2_confermaZeroCoperti: ["N/A", "Confermato 0", "In realta ne ha"],
-  b0_1_appGestionaleUsata: ["N/A", "Si", "No"],
+  b1_4_statoCampiCoperti: ["Nessuno", "Si, copertura fissa", "Si, copertura stagionale (pallone)", "Prevista in futuro"],
+  b0_1_appGestionaleUsata: ["Si", "No", "In parte"],
   b0_1_appGestionaleMotivo: ["Non si trovano bene", "Non sanno sfruttarla", "I giocatori non la usano", "Altro"],
   b1_0_palloneInvernale: ["N/A", "Si", "No"],
   b1_1_vincoliFITP: ["Nessuno", "Alcuni", "Tutti"],
@@ -111,21 +111,19 @@ export function calcolaSemaforiB(data) {
   // B0 tesserati totali (fallback) — informativo
   result.b0_tesseratiTotali = sem(SEMAFORO.NEUTRO);
 
-  // B0.2 conferma 0 campi coperti
-  switch (data.b0_2_confermaZeroCoperti) {
-    case "N/A": result.b0_2_confermaZeroCoperti = sem(SEMAFORO.NEUTRO); break;
-    case "Confermato 0": result.b0_2_confermaZeroCoperti = sem(SEMAFORO.ROSSO, true); break;
-    case "In realta ne ha": result.b0_2_confermaZeroCoperti = sem(SEMAFORO.VERDE); break;
-    default: result.b0_2_confermaZeroCoperti = sem(SEMAFORO.NEUTRO);
+  // B1.4 stato reale dei campi coperti (sostituisce A.6 se diverso)
+  switch (data.b1_4_statoCampiCoperti) {
+    case "Nessuno": result.b1_4_statoCampiCoperti = sem(SEMAFORO.ROSSO, true); break;
+    case "Si, copertura fissa": result.b1_4_statoCampiCoperti = sem(SEMAFORO.VERDE); break;
+    case "Si, copertura stagionale (pallone)": result.b1_4_statoCampiCoperti = sem(SEMAFORO.VERDE); break;
+    case "Prevista in futuro": result.b1_4_statoCampiCoperti = sem(SEMAFORO.ARANCIONE); break;
+    default: result.b1_4_statoCampiCoperti = sem(SEMAFORO.NEUTRO);
   }
 
   // B0.1 app gestionale usata — entrambe le risposte sono un buon segnale per noi (verde),
   // ma "No" indica un'area su cui lavorare (motivo raccolto separatamente)
-  switch (data.b0_1_appGestionaleUsata) {
-    case "Si": result.b0_1_appGestionaleUsata = sem(SEMAFORO.VERDE); break;
-    case "No": result.b0_1_appGestionaleUsata = sem(SEMAFORO.VERDE); break;
-    default: result.b0_1_appGestionaleUsata = sem(SEMAFORO.NEUTRO);
-  }
+  // Solo informativo: nessun semaforo (Si/No/In parte sono tutti segnali positivi per noi)
+  result.b0_1_appGestionaleUsata = sem(SEMAFORO.NEUTRO);
 
   // B1.0 pallone pressostatico invernale
   switch (data.b1_0_palloneInvernale) {

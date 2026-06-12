@@ -1,10 +1,32 @@
 import SemaforoBadge from "../SemaforoBadge";
 import { TextField, TextAreaField } from "../Fields";
 import { COLORS } from "../../theme";
+import { calcolaRadar, calcolaObiettivoPSL, generaLegenda } from "../../models/radar";
+import RadarSummary from "../RadarSummary";
 
-export default function BackendSummary({ session, analisi, costiAttuali, costiPSL, onChange }) {
+export default function BackendSummary({ session, analisi, costiAttuali, costiPSL, onChange, semaforiA, semaforiB, campiCopertiEffettivi }) {
+  const radarPre = calcolaRadar({ semaforiA });
+  const radarPost = calcolaRadar({ semaforiA, semaforiB, campiCopertiEffettivi });
+  const obiettivo = calcolaObiettivoPSL(radarPost.scores);
+  const legendaPost = generaLegenda({
+    dataA: session.sectionA,
+    dataB: session.sectionB,
+    semaforiA,
+    semaforiB,
+    scores: radarPost.scores,
+  });
+
   return (
     <div>
+      <RadarSummary
+        title="Confronto: prima e dopo la call"
+        series={[
+          { name: "Prima della call", values: radarPre.scores, color: COLORS.textMuted, dashed: true },
+          { name: "Dopo la call", values: radarPost.scores, color: COLORS.gold },
+          { name: "Obiettivo PSL", values: obiettivo, color: "#22c55e", dashed: true },
+        ]}
+        legenda={legendaPost}
+      />
 
       <div style={{ display: "flex", gap: "12px" }}>
         <div style={{ flex: 1 }}>
