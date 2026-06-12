@@ -11,6 +11,7 @@ import InCallForm from "./backend/InCallForm";
 import BackendSummary from "./backend/BackendSummary";
 import FrontendSummary from "./frontend/FrontendSummary";
 import { COLORS } from "../theme";
+import FeedbackPanel from "./FeedbackPanel";
 
 const STEPS = [
   {
@@ -207,6 +208,8 @@ export default function CallSession({ sessionId, onBack }) {
           )}
         </>
       )}
+
+      <FeedbackPanel sessionInfo={{ denominazione: session.sectionA?.denominazione }} />
     </div>
   );
 }

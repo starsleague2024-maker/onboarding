@@ -13,6 +13,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         onChange={set("denominazione")}
         semaforo={semafori.denominazione?.semaforo}
         needsCallFlag={semafori.denominazione?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="denominazione"
       />
 
       <div style={{ display: "flex", gap: "12px" }}>
@@ -22,6 +25,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
             value={data.telefono}
             onChange={set("telefono")}
             placeholder="es. 0123 456789"
+
+        sectionKey="sectionA"
+        fieldKey="telefono"
           />
         </div>
         <div style={{ flex: 1 }}>
@@ -30,6 +36,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
             value={data.email}
             onChange={set("email")}
             placeholder="es. info@centro.it"
+
+        sectionKey="sectionA"
+        fieldKey="email"
           />
         </div>
       </div>
@@ -41,6 +50,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         options={OPZIONI.formaGiuridica}
         semaforo={semafori.formaGiuridica?.semaforo}
         needsCallFlag={semafori.formaGiuridica?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="formaGiuridica"
       />
 
       <MultiSelectField
@@ -50,6 +62,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         options={OPZIONI.affiliazione}
         semaforo={semafori.affiliazione?.semaforo}
         needsCallFlag={semafori.affiliazione?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="affiliazione"
       />
 
       <NumberField
@@ -58,6 +73,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         onChange={set("tesseratiRASD")}
         semaforo={semafori.tesseratiRASD?.semaforo}
         needsCallFlag={semafori.tesseratiRASD?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="tesseratiRASD"
       />
 
       <NumberField
@@ -66,6 +84,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         onChange={set("campiTotali")}
         semaforo={semafori.campiTotali?.semaforo}
         needsCallFlag={semafori.campiTotali?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="campiTotali"
       />
 
       <NumberField
@@ -74,6 +95,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         onChange={set("campiCoperti")}
         semaforo={semafori.campiCoperti?.semaforo}
         needsCallFlag={semafori.campiCoperti?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="campiCoperti"
       />
       <p style={{ fontSize: "0.8rem", color: "#a8b5c2", marginTop: "-8px" }}>
         Nota: se ci sono campi outdoor, in call verra chiesto se in inverno vengono coperti con pallone pressostatico (B.1.0).
@@ -84,6 +108,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         value={data.regione}
         onChange={set("regione")}
         options={OPZIONI.regione}
+
+        sectionKey="sectionA"
+        fieldKey="regione"
       />
 
       <NumberField
@@ -92,6 +119,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         onChange={set("prezzoIndoor90")}
         suffix="€"
         semaforo={semafori.prezzoIndoor90?.semaforo}
+
+        sectionKey="sectionA"
+        fieldKey="prezzoIndoor90"
       />
 
       <NumberField
@@ -100,6 +130,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         onChange={set("prezzoOutdoor90")}
         suffix="€"
         semaforo={semafori.prezzoOutdoor90?.semaforo}
+
+        sectionKey="sectionA"
+        fieldKey="prezzoOutdoor90"
       />
 
       <SelectField
@@ -109,6 +142,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         options={OPZIONI.piattaformaPrenotazioni}
         semaforo={semafori.piattaformaPrenotazioni?.semaforo}
         needsCallFlag={semafori.piattaformaPrenotazioni?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="piattaformaPrenotazioni"
       />
       {data.piattaformaPrenotazioni === "Si" && (
         <SelectField
@@ -116,6 +152,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
           value={data.gestionalePrenotazioni}
           onChange={set("gestionalePrenotazioni")}
           options={OPZIONI.gestionaleBrand}
+
+        sectionKey="sectionA"
+        fieldKey="gestionalePrenotazioni"
         />
       )}
 
@@ -126,6 +165,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         options={OPZIONI.sitoWeb}
         semaforo={semafori.sitoWeb?.semaforo}
         needsCallFlag={semafori.sitoWeb?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="sitoWeb"
       />
 
       <SelectField
@@ -135,6 +177,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         options={OPZIONI.socialStato}
         semaforo={semafori.instagram?.semaforo}
         needsCallFlag={semafori.instagram?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="instagram"
       />
 
       <SelectField
@@ -144,6 +189,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         options={OPZIONI.socialStato}
         semaforo={semafori.facebook?.semaforo}
         needsCallFlag={semafori.facebook?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="facebook"
       />
 
       <NumberField
@@ -151,6 +199,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         value={data.googleRating}
         onChange={set("googleRating")}
         semaforo={semafori.googleRating?.semaforo}
+
+        sectionKey="sectionA"
+        fieldKey="googleRating"
       />
 
       <NumberField
@@ -158,6 +209,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         value={data.googleRecensioni}
         onChange={set("googleRecensioni")}
         semaforo={semafori.googleRecensioni?.semaforo}
+
+        sectionKey="sectionA"
+        fieldKey="googleRecensioni"
       />
 
       <SelectField
@@ -167,6 +221,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         options={OPZIONI.appPropria}
         semaforo={semafori.appPropria?.semaforo}
         needsCallFlag={semafori.appPropria?.needsCallFlag}
+
+        sectionKey="sectionA"
+        fieldKey="appPropria"
       />
 
       <TextAreaField
@@ -174,6 +231,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         value={data.noteSezioneA}
         onChange={set("noteSezioneA")}
         placeholder="Eventuali osservazioni aggiuntive emerse durante la ricerca pre-call..."
+
+        sectionKey="sectionA"
+        fieldKey="noteSezioneA"
       />
     </div>
   );

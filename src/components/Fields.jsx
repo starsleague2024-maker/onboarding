@@ -1,4 +1,5 @@
 import SemaforoBadge from "./SemaforoBadge";
+import FeedbackIcon from "./FeedbackIcon";
 import { COLORS } from "../theme";
 
 const fieldStyle = {
@@ -27,14 +28,17 @@ const inputStyle = {
 const labelStyle = { fontWeight: 500, fontSize: "0.85rem", color: COLORS.text };
 const flagStyle = { color: COLORS.gold, fontSize: "0.75rem" };
 
-export function TextField({ label, value, onChange, placeholder, semaforo, needsCallFlag }) {
+export function TextField({ label, value, onChange, placeholder, semaforo, needsCallFlag, sectionKey, fieldKey }) {
   return (
     <div style={fieldStyle}>
       <div style={labelRowStyle}>
         <label style={labelStyle}>
           {label} {needsCallFlag && <span style={flagStyle}>(chiedere in call)</span>}
         </label>
-        {semaforo && <SemaforoBadge semaforo={semaforo} />}
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          {semaforo && <SemaforoBadge semaforo={semaforo} />}
+          {fieldKey && <FeedbackIcon sectionKey={sectionKey} fieldKey={fieldKey} label={label} />}
+        </span>
       </div>
       <input
         style={inputStyle}
@@ -47,14 +51,17 @@ export function TextField({ label, value, onChange, placeholder, semaforo, needs
   );
 }
 
-export function NumberField({ label, value, onChange, placeholder, semaforo, needsCallFlag, suffix }) {
+export function NumberField({ label, value, onChange, placeholder, semaforo, needsCallFlag, suffix, sectionKey, fieldKey }) {
   return (
     <div style={fieldStyle}>
       <div style={labelRowStyle}>
         <label style={labelStyle}>
           {label} {needsCallFlag && <span style={flagStyle}>(chiedere in call)</span>}
         </label>
-        {semaforo && <SemaforoBadge semaforo={semaforo} />}
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          {semaforo && <SemaforoBadge semaforo={semaforo} />}
+          {fieldKey && <FeedbackIcon sectionKey={sectionKey} fieldKey={fieldKey} label={label} />}
+        </span>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
         <input
@@ -70,14 +77,17 @@ export function NumberField({ label, value, onChange, placeholder, semaforo, nee
   );
 }
 
-export function SelectField({ label, value, onChange, options, semaforo, needsCallFlag, includeEmpty = true }) {
+export function SelectField({ label, value, onChange, options, semaforo, needsCallFlag, includeEmpty = true, sectionKey, fieldKey }) {
   return (
     <div style={fieldStyle}>
       <div style={labelRowStyle}>
         <label style={labelStyle}>
           {label} {needsCallFlag && <span style={flagStyle}>(chiedere in call)</span>}
         </label>
-        {semaforo && <SemaforoBadge semaforo={semaforo} />}
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          {semaforo && <SemaforoBadge semaforo={semaforo} />}
+          {fieldKey && <FeedbackIcon sectionKey={sectionKey} fieldKey={fieldKey} label={label} />}
+        </span>
       </div>
       <select style={inputStyle} value={value ?? ""} onChange={(e) => onChange(e.target.value)}>
         {includeEmpty && <option value="">-- seleziona --</option>}
@@ -91,7 +101,7 @@ export function SelectField({ label, value, onChange, options, semaforo, needsCa
   );
 }
 
-export function MultiSelectField({ label, values, onChange, options, semaforo, needsCallFlag }) {
+export function MultiSelectField({ label, values, onChange, options, semaforo, needsCallFlag, sectionKey, fieldKey }) {
   const selected = Array.isArray(values) ? values : [];
 
   function toggle(opt) {
@@ -108,7 +118,10 @@ export function MultiSelectField({ label, values, onChange, options, semaforo, n
         <label style={labelStyle}>
           {label} {needsCallFlag && <span style={flagStyle}>(chiedere in call)</span>}
         </label>
-        {semaforo && <SemaforoBadge semaforo={semaforo} />}
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          {semaforo && <SemaforoBadge semaforo={semaforo} />}
+          {fieldKey && <FeedbackIcon sectionKey={sectionKey} fieldKey={fieldKey} label={label} />}
+        </span>
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
         {options.map((opt) => {
@@ -138,10 +151,13 @@ export function MultiSelectField({ label, values, onChange, options, semaforo, n
   );
 }
 
-export function TextAreaField({ label, value, onChange, placeholder }) {
+export function TextAreaField({ label, value, onChange, placeholder, sectionKey, fieldKey }) {
   return (
     <div style={fieldStyle}>
-      <label style={labelStyle}>{label}</label>
+      <div style={labelRowStyle}>
+        <label style={labelStyle}>{label}</label>
+        {fieldKey && <FeedbackIcon sectionKey={sectionKey} fieldKey={fieldKey} label={label} />}
+      </div>
       <textarea
         style={{ ...inputStyle, minHeight: "70px", resize: "vertical" }}
         value={value ?? ""}
