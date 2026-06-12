@@ -252,8 +252,9 @@ function socialSemaforo(value) {
     case "Attivo":
       return { semaforo: SEMAFORO.VERDE, needsCallFlag: false, isKO: false };
     case "Poco attivo":
-    case "Assente":
       return { semaforo: SEMAFORO.ARANCIONE, needsCallFlag: false, isKO: false };
+    case "Assente":
+      return { semaforo: SEMAFORO.ROSSO, needsCallFlag: false, isKO: false };
     default:
       return { semaforo: SEMAFORO.NEUTRO, needsCallFlag: true, isKO: false };
   }

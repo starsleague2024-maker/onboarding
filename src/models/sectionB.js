@@ -34,18 +34,20 @@ export const initialSectionB = {
   // B4 - Staff
   b4_1_personeStaff: "",        // numero (campo libero numerico)
   b4_2_referentePSL: "",         // "No" | "Titolare limitato" | "Staff dedicato"
-  b4_3_maestriStabili: "",       // "No" | "A chiamata" | "Stabili con contratto"
+  b4_3_maestriStabili: "",       // "No" | "Si, figure fisse"
 
   // B5 - Gestionale e costi
   b5_1_softwareGestione: "",     // "Nessuno/manuale" | "Excel" | "Gestionale di proprieta del centro" | "Piattaforma prenotazioni"
   b5_1_softwareNome: "",          // testo se "Software dedicato" - backend tendina
   b5_2_costoSoftwareAnnuale: "",
   b5_3_aperturaCambioSoftware: "", // "No" | "Con resistenze" | "Si"
-  b5_4_migrazioneEPS: "",          // "N/A" | "Si" | "No"
+  b5_3_notaResistenza: "",          // testo libero se "No" o "Con resistenze"
+  b5_4_migrazioneEPS: "",          // "Si" | "No" | "In valutazione"
   b5_5_tesseratiTotali: "",
   b5_5_tesseratiAgonistici: "",
   b5_5_tesseratiNonAgonistici: "",
-  b5_6_percPrenotazioniOnline: "",
+  b5_6_percOnline: "",   // % prenotazioni online
+  b5_6_percDesk: "",      // % prenotazioni desk (WA/altri canali)
 
   // B6 - Pricing
   b6_1_abbonamenti: "",       // "No" | "Si"
@@ -54,8 +56,8 @@ export const initialSectionB = {
 
   // B7 - Tornei e montepremi
   b7_1_organizzaTornei: "",   // "No" | "Si"
-  b7_1_fasciaMontepremi: "",   // "<500" | "501-1499" | ">=1500"
-  b7_1_quantiAnno: "",
+  b7_1_fasceMontepremi: [],    // multi-select: "Senza premio in denaro" | "Fino a 500€" | "Fino a 1000€" | "1500€+"
+  b7_1_quantiAnno: "",          // numero totale tornei/anno tra le fasce selezionate
 
   // B8 - Motivazione
   b8_1_problemaPrincipale: "", // "Fasce vuote" | "Fidelizzazione" | "Nuovi giocatori" | "Tornei e competizioni" | "Fatturato"
@@ -81,18 +83,18 @@ export const OPZIONI_B = {
   b3_1_stagionalita: ["Tutto l'anno", "Meglio estate", "Meglio inverno", "Inverno debole", "Estate debole", "Periodo morto"],
 
   b4_2_referentePSL: ["No", "Titolare limitato", "Staff dedicato"],
-  b4_3_maestriStabili: ["No", "A chiamata", "Stabili con contratto"],
+  b4_3_maestriStabili: ["No", "Si, figure fisse"],
 
   b5_1_softwareGestione: ["Nessuno/manuale", "Excel", "Gestionale di proprieta del centro", "Piattaforma prenotazioni"],
   b5_1_softwareNomeBrand: ["Playtomic", "Wansport", "Sport Clubbi", "Due Palleggi", "Altro"],
   b5_3_aperturaCambioSoftware: ["No", "Con resistenze", "Si"],
-  b5_4_migrazioneEPS: ["N/A", "Si", "No"],
+  b5_4_migrazioneEPS: ["Si", "No", "In valutazione"],
 
   b6_1_abbonamenti: ["No", "Si"],
   b6_2_prezziDifferenziati: ["No", "Si"],
 
   b7_1_organizzaTornei: ["No", "Si"],
-  b7_1_fasciaMontepremi: ["<500", "501-1499", ">=1500"],
+  b7_1_fasceMontepremi: ["Senza premio in denaro", "Fino a 500€", "Fino a 1000€", "1500€+"],
 
   b8_1_problemaPrincipale: ["Fasce vuote", "Fidelizzazione", "Nuovi giocatori", "Tornei e competizioni", "Fatturato"],
   b8_2_esperienzaCircuiti: ["Mai", "Positiva", "Negativa"],
@@ -236,8 +238,7 @@ export function calcolaSemaforiB(data) {
   // B4.3 maestri stabili
   switch (data.b4_3_maestriStabili) {
     case "No": result.b4_3_maestriStabili = sem(SEMAFORO.ARANCIONE); break;
-    case "A chiamata": result.b4_3_maestriStabili = sem(SEMAFORO.GIALLO); break;
-    case "Stabili con contratto": result.b4_3_maestriStabili = sem(SEMAFORO.VERDE); break;
+    case "Si, figure fisse": result.b4_3_maestriStabili = sem(SEMAFORO.VERDE); break;
     default: result.b4_3_maestriStabili = sem(SEMAFORO.NEUTRO);
   }
 
@@ -263,15 +264,16 @@ export function calcolaSemaforiB(data) {
 
   // B5.4 migrazione EPS
   switch (data.b5_4_migrazioneEPS) {
-    case "N/A": result.b5_4_migrazioneEPS = sem(SEMAFORO.VERDE); break;
-    case "Si": result.b5_4_migrazioneEPS = sem(SEMAFORO.ARANCIONE); break;
+    case "Si": result.b5_4_migrazioneEPS = sem(SEMAFORO.VERDE); break;
     case "No": result.b5_4_migrazioneEPS = sem(SEMAFORO.ROSSO); break;
+    case "In valutazione": result.b5_4_migrazioneEPS = sem(SEMAFORO.ARANCIONE); break;
     default: result.b5_4_migrazioneEPS = sem(SEMAFORO.NEUTRO);
   }
 
   // B5.5 / B5.6 — informativi
   result.b5_5_tesseratiTotali = sem(SEMAFORO.NEUTRO);
-  result.b5_6_percPrenotazioniOnline = sem(SEMAFORO.NEUTRO);
+  result.b5_6_percOnline = sem(SEMAFORO.NEUTRO);
+  result.b5_6_percDesk = sem(SEMAFORO.NEUTRO);
 
   // B6.1 abbonamenti
   switch (data.b6_1_abbonamenti) {
@@ -289,6 +291,21 @@ export function calcolaSemaforiB(data) {
 
   // B7.1 tornei montepremi — segnale positivo backend, no semaforo diretto
   result.b7_1_organizzaTornei = sem(SEMAFORO.NEUTRO);
+
+  // B7.1 fasce montepremi + frequenza: piu varieta e piu eventi = meglio
+  {
+    const fasce = data.b7_1_fasceMontepremi || [];
+    const n = Number(data.b7_1_quantiAnno) || 0;
+    let semaforo = SEMAFORO.NEUTRO;
+    if (data.b7_1_organizzaTornei === "Si") {
+      if (fasce.length === 0 || n <= 2) semaforo = SEMAFORO.ARANCIONE;
+      else if (fasce.length === 1 || n <= 5) semaforo = SEMAFORO.GIALLO;
+      else semaforo = SEMAFORO.VERDE;
+    } else if (data.b7_1_organizzaTornei === "No") {
+      semaforo = SEMAFORO.ARANCIONE;
+    }
+    result.b7_1_fasceMontepremi = sem(semaforo);
+  }
 
   // B8.1 problema principale
   switch (data.b8_1_problemaPrincipale) {

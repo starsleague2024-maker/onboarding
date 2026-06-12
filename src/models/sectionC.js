@@ -41,8 +41,12 @@ export function calcolaCostiAttuali(dataA, dataB) {
   let costoTornei = 0;
   if (dataB.b7_1_organizzaTornei === "Si") {
     const quanti = Number(dataB.b7_1_quantiAnno) || 0;
-    const tassaPerTorneo = tassaTorneoMontepremi(dataB.b7_1_fasciaMontepremi);
-    costoTornei = tassaPerTorneo * quanti;
+    const fasce = dataB.b7_1_fasceMontepremi || [];
+    if (fasce.length > 0 && quanti > 0) {
+      const tasseTotali = fasce.reduce((sum, f) => sum + tassaTorneoMontepremi(f), 0);
+      const tassaMedia = tasseTotali / fasce.length;
+      costoTornei = tassaMedia * quanti;
+    }
   }
   breakdown.tornei = costoTornei;
 
@@ -79,13 +83,28 @@ export function calcolaCostiPSL(dataA, dataB, pslPackage = PSL_PACKAGE_DEFAULT, 
 }
 
 /**
+ * Il confronto costi FITP ha senso solo se il centro e' attualmente
+ * affiliato FITP. Se non lo e', l'intero confronto va omesso dal documento.
+ */
+export function centroAffiliatoFITP(dataA) {
+  return (dataA.affiliazione || []).includes("FITP");
+}
+
+/**
  * Genera la tabella di confronto finale (Sezione C3) per il frontend.
+ * Se il centro non e' affiliato FITP, ritorna mostraConfronto: false
+ * e il confronto costi non va mostrato nel documento.
  */
 export function generaConfrontoFinale(dataA, dataB, pslPackage = PSL_PACKAGE_DEFAULT) {
+  if (!centroAffiliatoFITP(dataA)) {
+    return { mostraConfronto: false, righe: [], totaleOggi: 0, totalePSL: 0, risparmioStimato: 0 };
+  }
+
   const oggi = calcolaCostiAttuali(dataA, dataB);
   const psl = calcolaCostiPSL(dataA, dataB, pslPackage, oggi);
 
   return {
+    mostraConfronto: true,
     righe: [
       {
         voce: "Software gestione",
@@ -118,5 +137,4 @@ export function generaConfrontoFinale(dataA, dataB, pslPackage = PSL_PACKAGE_DEF
 export const ARGOMENTI_COMMERCIALI = [
   "I tuoi sponsor restano tuoi. Non prendiamo percentuale sul montepremi e amplifichiamo la visibilita dei tuoi partner su tutta la rete.",
   "I tuoi clienti che prenotano online oggi pagano una commissione aggiuntiva ad ogni prenotazione. Con PSL questo costo sparisce.",
-  `Per ogni tesserato PSL guadagni ${PSL_TESSERAMENTO.guadagnoNettoCentro.toFixed(2)}€ netti. Con la federazione pagavi.`,
 ];

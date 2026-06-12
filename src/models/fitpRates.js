@@ -57,11 +57,13 @@ export const PSL_TESSERAMENTO = {
 // Mappa fascia montepremi -> tassa torneo FITP
 export function tassaTorneoMontepremi(fascia) {
   switch (fascia) {
-    case "<500":
+    case "Senza premio in denaro":
+      return FITP.tornei.nonAgonistico;
+    case "Fino a 500€":
       return FITP.tornei.montepremiSotto500;
-    case "501-1499":
+    case "Fino a 1000€":
       return FITP.tornei.montepremi501_1499;
-    case ">=1500":
+    case "1500€+":
       return FITP.tornei.montepremiOltre1500;
     default:
       return 0;

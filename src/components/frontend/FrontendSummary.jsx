@@ -93,6 +93,7 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
       </Section>
 
       {/* Confronto costi */}
+      {confronto.mostraConfronto && (
       <Section title="Confronto costi">
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
@@ -126,6 +127,7 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
           </tbody>
         </table>
       </Section>
+      )}
 
       {/* Argomenti commerciali */}
       <Section title="Perche scegliere PSL">
@@ -133,6 +135,11 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
           {ARGOMENTI_COMMERCIALI.map((a, i) => (
             <li key={i}>{a}</li>
           ))}
+          {confronto.mostraConfronto && (
+            <li>
+              Per ogni tesserato PSL guadagni 15,40€ netti. Con la federazione pagavi.
+            </li>
+          )}
         </ul>
       </Section>
 

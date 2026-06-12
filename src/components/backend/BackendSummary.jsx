@@ -2,6 +2,7 @@ import SemaforoBadge from "../SemaforoBadge";
 import { TextField, TextAreaField } from "../Fields";
 import { COLORS } from "../../theme";
 import { calcolaRadar, calcolaObiettivoPSL, generaLegenda } from "../../models/radar";
+import { centroAffiliatoFITP } from "../../models/sectionC";
 import RadarSummary from "../RadarSummary";
 
 export default function BackendSummary({ session, analisi, costiAttuali, costiPSL, onChange, semaforiA, semaforiB, campiCopertiEffettivi }) {
@@ -109,6 +110,7 @@ export default function BackendSummary({ session, analisi, costiAttuali, costiPS
         </div>
       </div>
 
+      {centroAffiliatoFITP(session.sectionA) && (
       <div style={{ marginBottom: "16px" }}>
         <h4>Emulatore costi — riepilogo backend</h4>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
@@ -144,6 +146,7 @@ export default function BackendSummary({ session, analisi, costiAttuali, costiPS
           </tbody>
         </table>
       </div>
+      )}
 
       <TextAreaField
         label="Note interne (testo libero)"

@@ -296,6 +296,16 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         sectionKey="sectionB"
         fieldKey="b5_3_aperturaCambioSoftware"
       />
+      {(data.b5_3_aperturaCambioSoftware === "No" || data.b5_3_aperturaCambioSoftware === "Con resistenze") && (
+        <TextAreaField
+          label="↳ Cosa dice il centro? (per valutazione interna)"
+          value={data.b5_3_notaResistenza}
+          onChange={set("b5_3_notaResistenza")}
+
+          sectionKey="sectionB"
+          fieldKey="b5_3_notaResistenza"
+        />
+      )}
 
       <SelectField
         label="B.5.4 Se EPS diverso da ACSI: disposti a migrare?"
@@ -341,15 +351,30 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         </div>
       </div>
 
-      <NumberField
-        label="B.5.6 % prenotazioni che arrivano online vs desk?"
-        value={data.b5_6_percPrenotazioniOnline}
-        onChange={set("b5_6_percPrenotazioniOnline")}
-        suffix="%"
+      <div style={{ display: "flex", gap: "12px" }}>
+        <div style={{ flex: 1 }}>
+          <NumberField
+            label="B.5.6 % prenotazioni ONLINE"
+            value={data.b5_6_percOnline}
+            onChange={set("b5_6_percOnline")}
+            suffix="%"
 
-        sectionKey="sectionB"
-        fieldKey="b5_6_percPrenotazioniOnline"
-      />
+            sectionKey="sectionB"
+            fieldKey="b5_6_percOnline"
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <NumberField
+            label="↳ % prenotazioni DESK (WA/altri canali)"
+            value={data.b5_6_percDesk}
+            onChange={set("b5_6_percDesk")}
+            suffix="%"
+
+            sectionKey="sectionB"
+            fieldKey="b5_6_percDesk"
+          />
+        </div>
+      </div>
 
       <h4>B6 — Pricing</h4>
       <SelectField
@@ -395,29 +420,26 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         fieldKey="b7_1_organizzaTornei"
       />
       {data.b7_1_organizzaTornei === "Si" && (
-        <div style={{ display: "flex", gap: "12px" }}>
-          <div style={{ flex: 1 }}>
-            <SelectField
-              label="↳ Fascia montepremi"
-              value={data.b7_1_fasciaMontepremi}
-              onChange={set("b7_1_fasciaMontepremi")}
-              options={OPZIONI_B.b7_1_fasciaMontepremi}
+        <>
+          <MultiSelectField
+            label="↳ Che tipo di montepremi/premi mette in palio?"
+            values={data.b7_1_fasceMontepremi}
+            onChange={set("b7_1_fasceMontepremi")}
+            options={OPZIONI_B.b7_1_fasceMontepremi}
+            semaforo={semafori.b7_1_fasceMontepremi?.semaforo}
 
-        sectionKey="sectionB"
-        fieldKey="b7_1_fasciaMontepremi"
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <NumberField
-              label="↳ Quanti/anno?"
-              value={data.b7_1_quantiAnno}
-              onChange={set("b7_1_quantiAnno")}
+            sectionKey="sectionB"
+            fieldKey="b7_1_fasceMontepremi"
+          />
+          <NumberField
+            label="↳ Quanti torneo/eventi in totale all'anno?"
+            value={data.b7_1_quantiAnno}
+            onChange={set("b7_1_quantiAnno")}
 
-        sectionKey="sectionB"
-        fieldKey="b7_1_quantiAnno"
-            />
-          </div>
-        </div>
+            sectionKey="sectionB"
+            fieldKey="b7_1_quantiAnno"
+          />
+        </>
       )}
 
       <h4>B8 — Motivazione</h4>
