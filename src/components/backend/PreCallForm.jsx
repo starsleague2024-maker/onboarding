@@ -4,6 +4,11 @@ import { TextField, NumberField, SelectField, MultiSelectField, TextAreaField } 
 export default function PreCallForm({ data, semafori, onChange }) {
   const set = (field) => (value) => onChange({ ...data, [field]: value });
 
+  const campiCopertiNum = Number(data.campiCoperti) || 0;
+  const campiTotaliNum = Number(data.campiTotali) || 0;
+  const haCampiCoperti = data.campiCoperti !== "" && campiCopertiNum > 0;
+  const haCampiOutdoor = data.campiTotali !== "" && campiTotaliNum > campiCopertiNum;
+
   return (
     <div>
 
@@ -79,7 +84,7 @@ export default function PreCallForm({ data, semafori, onChange }) {
       />
 
       <NumberField
-        label="A.5 Campi totali"
+        label="A.5 Campi da gioco totali"
         value={data.campiTotali}
         onChange={set("campiTotali")}
         semaforo={semafori.campiTotali?.semaforo}
@@ -113,6 +118,7 @@ export default function PreCallForm({ data, semafori, onChange }) {
         fieldKey="regione"
       />
 
+      {haCampiCoperti && (
       <NumberField
         label="A.8 Prezzo indoor 90min (fascia premium)"
         value={data.prezzoIndoor90}
@@ -123,7 +129,9 @@ export default function PreCallForm({ data, semafori, onChange }) {
         sectionKey="sectionA"
         fieldKey="prezzoIndoor90"
       />
+      )}
 
+      {haCampiOutdoor && (
       <NumberField
         label="A.9 Prezzo outdoor 90min (fascia premium)"
         value={data.prezzoOutdoor90}
@@ -134,6 +142,7 @@ export default function PreCallForm({ data, semafori, onChange }) {
         sectionKey="sectionA"
         fieldKey="prezzoOutdoor90"
       />
+      )}
 
       <SelectField
         label="A.10 Piattaforma prenotazioni online"

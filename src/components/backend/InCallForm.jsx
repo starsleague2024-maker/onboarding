@@ -7,9 +7,36 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
   const tesseratiNonTrovati = !dataA?.tesseratiRASD;
   const haCampiOutdoor = Number(dataA?.campiTotali) > Number(dataA?.campiCoperti || 0);
   const usaAppGestionale = dataA?.appPropria === "Si (app del gestionale)";
+  const zeroCampiCoperti = dataA?.campiCoperti === "" || Number(dataA?.campiCoperti) === 0;
 
   return (
     <div>
+
+      {zeroCampiCoperti && (
+        <>
+          <h4>B0 — Campi coperti</h4>
+          <SelectField
+            label="In pre-call non risultano campi coperti: e' corretto?"
+            value={data.b0_2_confermaZeroCoperti}
+            onChange={set("b0_2_confermaZeroCoperti")}
+            options={OPZIONI_B.b0_2_confermaZeroCoperti}
+            semaforo={semafori.b0_2_confermaZeroCoperti?.semaforo}
+
+            sectionKey="sectionB"
+            fieldKey="b0_2_confermaZeroCoperti"
+          />
+          {data.b0_2_confermaZeroCoperti === "In realta ne ha" && (
+            <NumberField
+              label="↳ Quanti campi coperti ha effettivamente?"
+              value={data.b0_2_quantiCopertiReali}
+              onChange={set("b0_2_quantiCopertiReali")}
+
+              sectionKey="sectionB"
+              fieldKey="b0_2_quantiCopertiReali"
+            />
+          )}
+        </>
+      )}
 
       {tesseratiNonTrovati && (
         <>

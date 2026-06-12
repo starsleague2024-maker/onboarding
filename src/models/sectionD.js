@@ -10,6 +10,19 @@ import { SEMAFORO } from "./sectionA";
  * a tutti gli effetti per il KO e il conteggio.
  */
 export function calcolaCampiCopertiEffettivi(dataA, dataB, semaforiA) {
+  // B0.2: in call e' emerso che il centro ha effettivamente campi coperti
+  // nonostante A.6 fosse 0/vuoto
+  if (dataB.b0_2_confermaZeroCoperti === "In realta ne ha") {
+    const n = Number(dataB.b0_2_quantiCopertiReali);
+    let semaforo = SEMAFORO.NEUTRO;
+    if (!isNaN(n) && dataB.b0_2_quantiCopertiReali !== "") {
+      if (n === 0) semaforo = SEMAFORO.ROSSO;
+      else if (n === 1) semaforo = SEMAFORO.ARANCIONE;
+      else semaforo = SEMAFORO.VERDE;
+    }
+    return { semaforo, needsCallFlag: false, isKO: n === 0 };
+  }
+
   const palloneAttivo = dataB.b1_0_palloneInvernale === "Si";
 
   if (!palloneAttivo) {

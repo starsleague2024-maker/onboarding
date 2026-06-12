@@ -13,6 +13,8 @@ export const initialSectionB = {
   b0_1_appGestionaleMotivoAltro: "", // testo libero se "Altro"
 
   // B1 - Campi e vincoli
+  b0_2_confermaZeroCoperti: "", // "N/A" | "Confermato 0" | "In realta ne ha" -- chiesto se A.6 = 0 o vuoto, per confermare il dato
+  b0_2_quantiCopertiReali: "", // se "In realta ne ha", quanti
   b1_0_palloneInvernale: "", // "N/A" | "Si" | "No" -- se in A.6 ci sono campi outdoor, chiedere se in inverno vengono coperti con pallone pressostatico
   b1_1_vincoliFITP: "",        // "Nessuno" | "Alcuni" | "Tutti"
   b1_1_quantiVincolati: "",     // testo, se "Alcuni"
@@ -64,6 +66,7 @@ export const initialSectionB = {
 };
 
 export const OPZIONI_B = {
+  b0_2_confermaZeroCoperti: ["N/A", "Confermato 0", "In realta ne ha"],
   b0_1_appGestionaleUsata: ["N/A", "Si", "No"],
   b0_1_appGestionaleMotivo: ["Non si trovano bene", "Non sanno sfruttarla", "I giocatori non la usano", "Altro"],
   b1_0_palloneInvernale: ["N/A", "Si", "No"],
@@ -107,6 +110,14 @@ export function calcolaSemaforiB(data) {
 
   // B0 tesserati totali (fallback) — informativo
   result.b0_tesseratiTotali = sem(SEMAFORO.NEUTRO);
+
+  // B0.2 conferma 0 campi coperti
+  switch (data.b0_2_confermaZeroCoperti) {
+    case "N/A": result.b0_2_confermaZeroCoperti = sem(SEMAFORO.NEUTRO); break;
+    case "Confermato 0": result.b0_2_confermaZeroCoperti = sem(SEMAFORO.ROSSO, true); break;
+    case "In realta ne ha": result.b0_2_confermaZeroCoperti = sem(SEMAFORO.VERDE); break;
+    default: result.b0_2_confermaZeroCoperti = sem(SEMAFORO.NEUTRO);
+  }
 
   // B0.1 app gestionale usata — entrambe le risposte sono un buon segnale per noi (verde),
   // ma "No" indica un'area su cui lavorare (motivo raccolto separatamente)
