@@ -64,10 +64,6 @@ export const initialSectionC = {
       serieA: "",
       veterani: "",
     },
-    quotePartecipazione: {
-      over16: "",
-      under16: "",
-    },
   },
 };
 
@@ -86,7 +82,7 @@ const FITP_LABELS = {
   },
   tecnici: {
     title: "Tecnici",
-    alboMaestriPadel: "Albo Maestri Padel",
+    alboMaestriPadel: "Maestro Nazionale",
     alboIstruttori2Livello: "Albo Istruttori 2° livello",
     alboIstruttori1Livello: "Albo Istruttori 1° livello",
   },
@@ -112,11 +108,6 @@ const FITP_LABELS = {
     serieB: "Serie B",
     serieA: "Serie A",
     veterani: "Veterani",
-  },
-  quotePartecipazione: {
-    title: "Quote partecipazione",
-    over16: "Quota partecipazione over 16",
-    under16: "Quota partecipazione under 16",
   },
 };
 
@@ -152,7 +143,6 @@ export function calcolaCostiFITP(fitpData) {
   breakdown.campionatiSquadre = sumCategory(fitpData.campionatiSquadre, FITP.campionatiSquadre);
 
   // Quote partecipazione
-  breakdown.quotePartecipazione = sumCategory(fitpData.quotePartecipazione, FITP.quotePartecipazione);
 
   const totale = Object.values(breakdown).reduce((a, b) => a + b, 0);
 
@@ -170,7 +160,17 @@ export function calcolaCostiFITP(fitpData) {
     (Number(t.agonisticaOver16_1a2a) || 0);
   const tesseratiTotali = tesseratiUnder18 + tesseratiOver18;
 
-  return { breakdown, totale, tesseratiTotali, tesseratiUnder18, tesseratiOver18 };
+  // Costo FITP tesseramento per fascia (per il confronto separato Over18/Under18)
+  const costoTesseramentoUnder18 =
+    (Number(t.nonAgonisticaUnder16) || 0) * FITP.tesseramento.nonAgonisticaUnder16 +
+    (Number(t.agonisticaUnder16_3a4a5a) || 0) * FITP.tesseramento.agonisticaUnder16_3a4a5a +
+    (Number(t.agonisticaUnder16_1a2a) || 0) * FITP.tesseramento.agonisticaUnder16_1a2a;
+  const costoTesseramentoOver18 =
+    (Number(t.nonAgonisticaOver16) || 0) * FITP.tesseramento.nonAgonisticaOver16 +
+    (Number(t.agonisticaOver16_3a4a5a) || 0) * FITP.tesseramento.agonisticaOver16_3a4a5a +
+    (Number(t.agonisticaOver16_1a2a) || 0) * FITP.tesseramento.agonisticaOver16_1a2a;
+
+  return { breakdown, totale, tesseratiTotali, tesseratiUnder18, tesseratiOver18, costoTesseramentoUnder18, costoTesseramentoOver18 };
 }
 
 function sumCategory(values, rates) {
@@ -216,7 +216,23 @@ export function calcolaConfrontoCategorieFITP(fitpData) {
       label: "Tesseramento",
       oggi: costi.breakdown.tesseramento,
       conPSL: -psl.guadagnoTesseramento, // negativo = cashback per il centro
-      conPSLLabel: `Cashback ${psl.guadagnoTesseramento.toFixed(2)} € (${costi.tesseratiUnder18} under18 x ${PSL_TESSERAMENTO.under18.guadagnoNettoCentro.toFixed(2)}€ + ${costi.tesseratiOver18} over18 x ${PSL_TESSERAMENTO.over18.guadagnoNettoCentro.toFixed(2)}€)`,
+      conPSLLabel: `Cashback totale ${psl.guadagnoTesseramento.toFixed(2)} €`,
+      subcategorie: [
+        {
+          label: "Over18",
+          numTesserati: costi.tesseratiOver18,
+          oggi: costi.costoTesseramentoOver18,
+          conPSL: psl.guadagnoOver18,
+          tariffaPSL: PSL_TESSERAMENTO.over18.guadagnoNettoCentro,
+        },
+        {
+          label: "Under18",
+          numTesserati: costi.tesseratiUnder18,
+          oggi: costi.costoTesseramentoUnder18,
+          conPSL: psl.guadagnoUnder18,
+          tariffaPSL: PSL_TESSERAMENTO.under18.guadagnoNettoCentro,
+        },
+      ],
     },
     {
       key: "tecnici",
@@ -243,13 +259,6 @@ export function calcolaConfrontoCategorieFITP(fitpData) {
       key: "campionatiSquadre",
       label: "Campionati a squadre",
       oggi: costi.breakdown.campionatiSquadre,
-      conPSL: 0,
-      conPSLLabel: "0,00 € (incluso)",
-    },
-    {
-      key: "quotePartecipazione",
-      label: "Quote partecipazione",
-      oggi: costi.breakdown.quotePartecipazione,
       conPSL: 0,
       conPSLLabel: "0,00 € (incluso)",
     },

@@ -41,10 +41,6 @@ export const FITP = {
     serieA: 3500,
     veterani: 110,
   },
-  quotePartecipazione: {
-    over16: 6,
-    under16: 3,
-  },
 };
 
 // PSL / ACSI — guadagno tesseramento

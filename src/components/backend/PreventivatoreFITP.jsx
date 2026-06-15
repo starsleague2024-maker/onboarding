@@ -8,7 +8,6 @@ const CATEGORY_ORDER = [
   "scuolaPadel",
   "tornei",
   "campionatiSquadre",
-  "quotePartecipazione",
 ];
 
 export default function PreventivatoreFITP({ sectionC, onChange, dataB }) {
@@ -115,6 +114,30 @@ export default function PreventivatoreFITP({ sectionC, onChange, dataB }) {
 
 function CompareRow({ categoria }) {
   if (!categoria) return null;
+
+  // Tesseramento: mostra Over18/Under18 separati, niente riga "Differenza" generica
+  if (categoria.subcategorie) {
+    return (
+      <div style={{ marginTop: "8px", padding: "8px", borderRadius: "6px", background: COLORS.cardLight, fontSize: "0.85rem" }}>
+        {categoria.subcategorie.map((sub) => (
+          <div key={sub.label} style={{ marginBottom: "8px" }}>
+            <div style={{ color: COLORS.gold, fontWeight: 700, marginBottom: "2px" }}>{sub.label} ({sub.numTesserati})</div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: COLORS.textMuted }}>Oggi (FITP)</span>
+              <span style={{ color: COLORS.text, fontWeight: 600 }}>{sub.oggi.toFixed(2)} €</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: COLORS.textMuted }}>Con PSL/ACSI (cashback)</span>
+              <span style={{ color: COLORS.text, fontWeight: 600 }}>
+                +{sub.conPSL.toFixed(2)} € ({sub.numTesserati} x {sub.tariffaPSL.toFixed(2)}€)
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   // conPSL >= 0: e' un costo con PSL -> differenza = oggi - conPSL
   // conPSL < 0: e' un cashback per il centro -> differenza = oggi + |conPSL|
   const diff = categoria.conPSL >= 0
@@ -135,6 +158,7 @@ function CompareRow({ categoria }) {
         <span style={{ color: COLORS.gold, fontWeight: 700 }}>Differenza</span>
         <span style={{ color: COLORS.gold, fontWeight: 700 }}>+{diff.toFixed(2)} €</span>
       </div>
+
     </div>
   );
 }
