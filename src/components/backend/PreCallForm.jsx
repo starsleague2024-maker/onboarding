@@ -1,5 +1,6 @@
 import { OPZIONI } from "../../models/sectionA";
 import { TextField, NumberField, SelectField, MultiSelectField, TextAreaField } from "../Fields";
+import { COLORS } from "../../theme";
 
 export default function PreCallForm({ data, semafori, onChange }) {
   const set = (field) => (value) => onChange({ ...data, [field]: value });
@@ -248,14 +249,28 @@ export default function PreCallForm({ data, semafori, onChange }) {
         fieldKey="multisede"
       />
       {data.multisede === "Si" && (
-        <NumberField
-          label="↳ Quante sedi in totale?"
-          value={data.numeroSedi}
-          onChange={set("numeroSedi")}
+        <>
+          <NumberField
+            label="↳ Quante sedi in totale?"
+            value={data.numeroSedi}
+            onChange={set("numeroSedi")}
 
-          sectionKey="sectionA"
-          fieldKey="numeroSedi"
-        />
+            sectionKey="sectionA"
+            fieldKey="numeroSedi"
+          />
+          <div
+            style={{
+              padding: "8px 12px",
+              borderRadius: "6px",
+              background: "#f97316",
+              color: COLORS.navy,
+              fontSize: "0.8rem",
+              marginBottom: "12px",
+            }}
+          >
+            Attenzione: essendo un centro multisede, il numero tesserati RASD (A.4) potrebbe includere tutte le sedi e non essere specifico di questo centro. Verificare in call.
+          </div>
+        </>
       )}
 
       <TextAreaField

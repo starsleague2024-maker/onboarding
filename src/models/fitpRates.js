@@ -54,6 +54,14 @@ export const PSL_TESSERAMENTO = {
   guadagnoNettoCentro: 15.4, // 20 - 4.6
 };
 
+// Affiliazione ACSI: costo annuale comprensivo di responsabilita civile.
+// Altri enti di promozione sportiva fanno pagare la stessa cifra di affiliazione
+// PIU la RC a parte.
+export const ACSI_AFFILIAZIONE = {
+  costoAnnuale: 100,
+  rcInclusa: true,
+};
+
 // Mappa fascia montepremi -> tassa torneo FITP
 export function tassaTorneoMontepremi(fascia) {
   switch (fascia) {

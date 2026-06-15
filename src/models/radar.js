@@ -222,6 +222,9 @@ export function generaLegenda({ dataA, dataB, semaforiA, semaforiB, scores }) {
   // 6. Community & Attivita
   {
     let stato = `Tesserati RASD: ${dataA.tesseratiRASD || "n/d"}.`;
+    if (dataA.multisede === "Si") {
+      stato += " ATTENZIONE: centro multisede, il dato tesserati potrebbe includere tutte le sedi.";
+    }
     let daMigliorare, daChiedere;
     if (!inCall) {
       daMigliorare = "Dato completo disponibile solo dopo la call.";

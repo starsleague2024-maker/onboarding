@@ -1,5 +1,5 @@
 import SemaforoBadge from "../SemaforoBadge";
-import { ARGOMENTI_COMMERCIALI } from "../../models/sectionC";
+import { ARGOMENTI_COMMERCIALI, ARGOMENTI_ACSI } from "../../models/sectionC";
 import { SEMAFORO } from "../../models/sectionA";
 import { COLORS } from "../../theme";
 
@@ -93,7 +93,6 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
       </Section>
 
       {/* Confronto costi */}
-      {confronto.mostraConfronto && (
       <Section title="Confronto costi">
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
@@ -127,7 +126,6 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
           </tbody>
         </table>
       </Section>
-      )}
 
       {/* Argomenti commerciali */}
       <Section title="Perche scegliere PSL">
@@ -135,7 +133,10 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
           {ARGOMENTI_COMMERCIALI.map((a, i) => (
             <li key={i}>{a}</li>
           ))}
-          {confronto.mostraConfronto && (
+          {(dataA.affiliazione || []).includes("ACSI") && ARGOMENTI_ACSI.map((a, i) => (
+            <li key={`acsi-${i}`}>{a}</li>
+          ))}
+          {confronto.modalita === "fitp" && (
             <li>
               Per ogni tesserato PSL guadagni 15,40€ netti. Con la federazione pagavi.
             </li>

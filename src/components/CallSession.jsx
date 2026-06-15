@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { storage } from "../data";
 import { initialSectionA, calcolaSemaforiA } from "../models/sectionA";
 import { initialSectionB, calcolaSemaforiB } from "../models/sectionB";
-import { calcolaCostiAttuali, calcolaCostiPSL, generaConfrontoFinale, PSL_PACKAGE_DEFAULT } from "../models/sectionC";
+import { generaConfrontoFinale, PSL_PACKAGE_DEFAULT, initialSectionC } from "../models/sectionC";
 import { calcolaAnalisiFinale, calcolaCampiCopertiEffettivi } from "../models/sectionD";
 
 import PreCallForm from "./backend/PreCallForm";
@@ -12,6 +12,17 @@ import BackendSummary from "./backend/BackendSummary";
 import FrontendSummary from "./frontend/FrontendSummary";
 import { COLORS } from "../theme";
 import FeedbackPanel from "./FeedbackPanel";
+
+function mergeSectionC(saved) {
+  const merged = JSON.parse(JSON.stringify(initialSectionC));
+  if (!saved) return merged;
+  for (const catKey in merged.fitp) {
+    if (saved.fitp?.[catKey]) {
+      merged.fitp[catKey] = { ...merged.fitp[catKey], ...saved.fitp[catKey] };
+    }
+  }
+  return merged;
+}
 
 const STEPS = [
   {
@@ -61,6 +72,7 @@ export default function CallSession({ sessionId, onBack }) {
           ...s,
           sectionA,
           sectionB: { ...initialSectionB, ...(s.sectionB || {}) },
+          sectionC: mergeSectionC(s.sectionC),
           pslPackage: s.pslPackage || { ...PSL_PACKAGE_DEFAULT },
         });
         if (typeof s.currentStep === "number") {
@@ -105,9 +117,7 @@ export default function CallSession({ sessionId, onBack }) {
   const semaforiB = calcolaSemaforiB(session.sectionB);
   const analisi = calcolaAnalisiFinale(session.sectionA, session.sectionB, semaforiA, semaforiB);
   const campiCopertiEffettivi = calcolaCampiCopertiEffettivi(session.sectionA, session.sectionB, semaforiA);
-  const costiAttuali = calcolaCostiAttuali(session.sectionA, session.sectionB);
-  const costiPSL = calcolaCostiPSL(session.sectionA, session.sectionB, session.pslPackage, costiAttuali);
-  const confronto = generaConfrontoFinale(session.sectionA, session.sectionB, session.pslPackage);
+  const confronto = generaConfrontoFinale(session.sectionA, session.sectionB, session.sectionC, session.pslPackage);
 
   function goNext() {
     setStep((s) => {
@@ -184,8 +194,6 @@ export default function CallSession({ sessionId, onBack }) {
               <BackendSummary
                 session={session}
                 analisi={analisi}
-                costiAttuali={costiAttuali}
-                costiPSL={costiPSL}
                 onChange={handleSessionMetaChange}
                 semaforiA={semaforiA}
                 semaforiB={semaforiB}

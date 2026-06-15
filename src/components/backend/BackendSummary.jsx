@@ -2,10 +2,11 @@ import SemaforoBadge from "../SemaforoBadge";
 import { TextField, TextAreaField } from "../Fields";
 import { COLORS } from "../../theme";
 import { calcolaRadar, calcolaObiettivoPSL, generaLegenda } from "../../models/radar";
-import { centroAffiliatoFITP } from "../../models/sectionC";
+import { centroAffiliatoFITP, generaConfrontoFinale, NOTA_TRATTATIVA_TRATTENUTA } from "../../models/sectionC";
+import PreventivatoreFITP from "./PreventivatoreFITP";
 import RadarSummary from "../RadarSummary";
 
-export default function BackendSummary({ session, analisi, costiAttuali, costiPSL, onChange, semaforiA, semaforiB, campiCopertiEffettivi }) {
+export default function BackendSummary({ session, analisi, onChange, semaforiA, semaforiB, campiCopertiEffettivi }) {
   const radarPre = calcolaRadar({ semaforiA });
   const radarPost = calcolaRadar({ semaforiA, semaforiB, campiCopertiEffettivi });
   const obiettivo = calcolaObiettivoPSL(radarPost.scores);
@@ -110,49 +111,81 @@ export default function BackendSummary({ session, analisi, costiAttuali, costiPS
         </div>
       </div>
 
-      {centroAffiliatoFITP(session.sectionA) && (
-      <div style={{ marginBottom: "16px" }}>
-        <h4>Emulatore costi — riepilogo backend</h4>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.9rem" }}>
-          <tbody>
-            <tr>
-              <td>Affiliazione/federazione</td>
-              <td style={{ textAlign: "right" }}>{costiAttuali.breakdown.affiliazione.toFixed(2)} €</td>
-            </tr>
-            <tr>
-              <td>Tesseramento</td>
-              <td style={{ textAlign: "right" }}>{costiAttuali.breakdown.tesseramento.toFixed(2)} €</td>
-            </tr>
-            <tr>
-              <td>Tornei</td>
-              <td style={{ textAlign: "right" }}>{costiAttuali.breakdown.tornei.toFixed(2)} €</td>
-            </tr>
-            <tr>
-              <td>Software gestione</td>
-              <td style={{ textAlign: "right" }}>{costiAttuali.breakdown.software.toFixed(2)} €</td>
-            </tr>
-            <tr style={{ fontWeight: "bold", borderTop: "2px solid #ddd" }}>
-              <td>Totale costi attuali</td>
-              <td style={{ textAlign: "right" }}>{costiAttuali.totale.toFixed(2)} €</td>
-            </tr>
-            <tr>
-              <td>Guadagno tesseramento PSL</td>
-              <td style={{ textAlign: "right" }}>{costiPSL.guadagnoTesseramento.toFixed(2)} €</td>
-            </tr>
-            <tr style={{ fontWeight: "bold" }}>
-              <td>Totale netto PSL</td>
-              <td style={{ textAlign: "right" }}>{costiPSL.totaleNetto.toFixed(2)} €</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      {session.sectionA.multisede === "Si" && (
+        <div
+          style={{
+            padding: "10px 12px",
+            borderRadius: "6px",
+            background: COLORS.cardLight,
+            border: `1px solid ${COLORS.gold}`,
+            marginBottom: "16px",
+            fontSize: "0.85rem",
+            color: COLORS.textMuted,
+          }}
+        >
+          <strong style={{ color: COLORS.gold }}>Nota interna:</strong> {NOTA_TRATTATIVA_TRATTENUTA}
+        </div>
       )}
+
+      <div style={{ marginBottom: "16px" }}>
+        <h4>Preventivatore</h4>
+        {centroAffiliatoFITP(session.sectionA) ? (
+          <PreventivatoreFITP
+            sectionC={session.sectionC}
+            dataB={session.sectionB}
+            onChange={(sectionC) => onChange({ ...session, sectionC })}
+          />
+        ) : (
+          <SimplePreventivatore session={session} />
+        )}
+      </div>
 
       <TextAreaField
         label="Note interne (testo libero)"
         value={session.noteInterne}
         onChange={(v) => onChange({ ...session, noteInterne: v })}
       />
+    </div>
+  );
+}
+
+function SimplePreventivatore({ session }) {
+  const confronto = generaConfrontoFinale(session.sectionA, session.sectionB, session.sectionC);
+  const costoGestionale = Number(session.sectionB.b5_2_costoSoftwareAnnuale) || 0;
+
+  return (
+    <div
+      style={{
+        padding: "12px",
+        borderRadius: "8px",
+        background: COLORS.cardLight,
+        border: `1px solid ${COLORS.gold}`,
+      }}
+    >
+      <p style={{ marginTop: 0, color: COLORS.textMuted, fontSize: "0.85rem" }}>
+        Centro non affiliato FITP: confronto basato solo sul costo del software di gestione dichiarato (B.5.2).
+      </p>
+      <Row label="Costo gestionale attuale (annuale)" value={costoGestionale} />
+      <Row label="Costo pacchetto PSL (annuale)" value={confronto.totalePSL} />
+      <Row label="Differenza" value={confronto.risparmioStimato} bold highlight />
+    </div>
+  );
+}
+
+function Row({ label, value, bold, highlight }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "4px 0",
+        fontSize: "0.9rem",
+        fontWeight: bold ? 700 : 400,
+        color: highlight ? COLORS.gold : COLORS.text,
+      }}
+    >
+      <span>{label}</span>
+      <span>{value.toFixed(2)} €</span>
     </div>
   );
 }
