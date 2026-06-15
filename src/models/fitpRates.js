@@ -49,9 +49,15 @@ export const FITP = {
 
 // PSL / ACSI — guadagno tesseramento
 export const PSL_TESSERAMENTO = {
-  prezzoTessera: 20,       // pagato dal giocatore al centro
-  trattenutaACSI: 4.6,     // trattenuta ACSI
-  guadagnoNettoCentro: 15.4, // 20 - 4.6
+  trattenutaACSI: 4.6, // trattenuta ACSI per ogni tesseramento (trattabile con grandi numeri)
+  under18: {
+    prezzoTessera: 15,
+    guadagnoNettoCentro: 15 - 4.6, // 10.4
+  },
+  over18: {
+    prezzoTessera: 20,
+    guadagnoNettoCentro: 20 - 4.6, // 15.4
+  },
 };
 
 // Affiliazione ACSI: costo annuale comprensivo di responsabilita civile.

@@ -156,11 +156,21 @@ export function calcolaCostiFITP(fitpData) {
 
   const totale = Object.values(breakdown).reduce((a, b) => a + b, 0);
 
-  // Tesserati totali (per calcolo guadagno PSL/ACSI)
+  // Tesserati per fascia (per calcolo guadagno PSL/ACSI):
+  // le categorie FITP "under16" vengono mappate su PSL "under18",
+  // le categorie "over16" vengono mappate su PSL "over18".
   const t = fitpData.tesseramento;
-  const tesseratiTotali = Object.values(t).reduce((sum, v) => sum + (Number(v) || 0), 0);
+  const tesseratiUnder18 =
+    (Number(t.nonAgonisticaUnder16) || 0) +
+    (Number(t.agonisticaUnder16_3a4a5a) || 0) +
+    (Number(t.agonisticaUnder16_1a2a) || 0);
+  const tesseratiOver18 =
+    (Number(t.nonAgonisticaOver16) || 0) +
+    (Number(t.agonisticaOver16_3a4a5a) || 0) +
+    (Number(t.agonisticaOver16_1a2a) || 0);
+  const tesseratiTotali = tesseratiUnder18 + tesseratiOver18;
 
-  return { breakdown, totale, tesseratiTotali };
+  return { breakdown, totale, tesseratiTotali, tesseratiUnder18, tesseratiOver18 };
 }
 
 function sumCategory(values, rates) {
@@ -175,12 +185,75 @@ function sumCategory(values, rates) {
 /**
  * Calcola il totale netto pacchetto PSL dato il guadagno tesseramento.
  */
-export function calcolaCostiPSL(tesseratiTotali, pslPackage = PSL_PACKAGE_DEFAULT) {
-  const guadagnoTesseramento = tesseratiTotali * PSL_TESSERAMENTO.guadagnoNettoCentro;
+export function calcolaCostiPSL(tesseratiUnder18, tesseratiOver18, pslPackage = PSL_PACKAGE_DEFAULT) {
+  const guadagnoUnder18 = tesseratiUnder18 * PSL_TESSERAMENTO.under18.guadagnoNettoCentro;
+  const guadagnoOver18 = tesseratiOver18 * PSL_TESSERAMENTO.over18.guadagnoNettoCentro;
+  const guadagnoTesseramento = guadagnoUnder18 + guadagnoOver18;
   const costoPacchettoAnnuale = pslPackage.annuale || pslPackage.mensile * 12;
   const totaleNetto = costoPacchettoAnnuale - guadagnoTesseramento;
 
-  return { costoPacchettoAnnuale, guadagnoTesseramento, totaleNetto };
+  return { costoPacchettoAnnuale, guadagnoTesseramento, guadagnoUnder18, guadagnoOver18, totaleNetto };
+}
+
+/**
+ * Confronto FITP vs PSL per ogni categoria, riga per riga.
+ * Ogni categoria ha: { key, label, oggi (costo FITP), conPSL (costo/guadagno con PSL), conPSLLabel }
+ */
+export function calcolaConfrontoCategorieFITP(fitpData) {
+  const costi = calcolaCostiFITP(fitpData);
+  const psl = calcolaCostiPSL(costi.tesseratiUnder18, costi.tesseratiOver18, PSL_PACKAGE_DEFAULT);
+
+  return [
+    {
+      key: "affiliazione",
+      label: "Affiliazione",
+      oggi: costi.breakdown.affiliazione,
+      conPSL: ACSI_AFFILIAZIONE.costoAnnuale,
+      conPSLLabel: `${ACSI_AFFILIAZIONE.costoAnnuale.toFixed(2)} € (RC inclusa)`,
+    },
+    {
+      key: "tesseramento",
+      label: "Tesseramento",
+      oggi: costi.breakdown.tesseramento,
+      conPSL: -psl.guadagnoTesseramento, // negativo = cashback per il centro
+      conPSLLabel: `Cashback ${psl.guadagnoTesseramento.toFixed(2)} € (${costi.tesseratiUnder18} under18 x ${PSL_TESSERAMENTO.under18.guadagnoNettoCentro.toFixed(2)}€ + ${costi.tesseratiOver18} over18 x ${PSL_TESSERAMENTO.over18.guadagnoNettoCentro.toFixed(2)}€)`,
+    },
+    {
+      key: "tecnici",
+      label: "Tecnici",
+      oggi: costi.breakdown.tecnici,
+      conPSL: 0,
+      conPSLLabel: "0,00 € (incluso)",
+    },
+    {
+      key: "scuolaPadel",
+      label: "Scuola Padel",
+      oggi: costi.breakdown.scuolaPadel,
+      conPSL: 0,
+      conPSLLabel: "0,00 € (incluso)",
+    },
+    {
+      key: "tornei",
+      label: "Tornei",
+      oggi: costi.breakdown.tornei,
+      conPSL: 0,
+      conPSLLabel: "0,00 € (incluso)",
+    },
+    {
+      key: "campionatiSquadre",
+      label: "Campionati a squadre",
+      oggi: costi.breakdown.campionatiSquadre,
+      conPSL: 0,
+      conPSLLabel: "0,00 € (incluso)",
+    },
+    {
+      key: "quotePartecipazione",
+      label: "Quote partecipazione",
+      oggi: costi.breakdown.quotePartecipazione,
+      conPSL: 0,
+      conPSLLabel: "0,00 € (incluso)",
+    },
+  ];
 }
 
 /**
@@ -219,54 +292,28 @@ export function generaConfrontoFinale(dataA, dataB, sectionC, pslPackage = PSL_P
 
   const fitpData = sectionC?.fitp || initialSectionC.fitp;
   const costiFITP = calcolaCostiFITP(fitpData);
-  const psl = calcolaCostiPSL(costiFITP.tesseratiTotali, pslPackage);
+  const psl = calcolaCostiPSL(costiFITP.tesseratiUnder18, costiFITP.tesseratiOver18, pslPackage);
+  const categorie = calcolaConfrontoCategorieFITP(fitpData);
 
   const costoGestionale = Number(dataB.b5_2_costoSoftwareAnnuale) || 0;
 
+  const righe = [
+    {
+      voce: "Software gestione",
+      oggi: costoGestionale,
+      conPSL: "Incluso",
+    },
+    ...categorie.map((c) => ({
+      voce: c.label,
+      oggi: c.oggi,
+      conPSL: c.key === "tesseramento" ? c.conPSL : c.conPSLLabel,
+    })),
+  ];
+
   return {
     modalita: "fitp",
-    righe: [
-      {
-        voce: "Software gestione",
-        oggi: costoGestionale,
-        conPSL: "Incluso",
-      },
-      {
-        voce: "Affiliazione/federazione",
-        oggi: costiFITP.breakdown.affiliazione,
-        conPSL: `${ACSI_AFFILIAZIONE.costoAnnuale.toFixed(2)} € (RC inclusa)`,
-      },
-      {
-        voce: "Tesseramento",
-        oggi: costiFITP.breakdown.tesseramento,
-        conPSL: -psl.guadagnoTesseramento, // negativo = guadagno per il centro
-      },
-      {
-        voce: "Tecnici",
-        oggi: costiFITP.breakdown.tecnici,
-        conPSL: "Da definire",
-      },
-      {
-        voce: "Scuola Padel",
-        oggi: costiFITP.breakdown.scuolaPadel,
-        conPSL: "Da definire",
-      },
-      {
-        voce: "Tornei",
-        oggi: costiFITP.breakdown.tornei,
-        conPSL: "Da definire",
-      },
-      {
-        voce: "Campionati a squadre",
-        oggi: costiFITP.breakdown.campionatiSquadre,
-        conPSL: "Da definire",
-      },
-      {
-        voce: "Quote partecipazione",
-        oggi: costiFITP.breakdown.quotePartecipazione,
-        conPSL: "Da definire",
-      },
-    ],
+    righe,
+    categorie,
     totaleOggi: costiFITP.totale + costoGestionale,
     totalePSL: psl.totaleNetto,
     risparmioStimato: (costiFITP.totale + costoGestionale) - psl.totaleNetto,
