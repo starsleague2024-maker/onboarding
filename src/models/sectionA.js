@@ -49,6 +49,9 @@ export const initialSectionA = {
   googleRecensioni: "",
   // A.18 - App propria del centro
   appPropria: "", // "Si (app propria)" | "Si (app del gestionale)" | "No" | ""
+  // Multisede
+  multisede: "", // "Si" | "No"
+  numeroSedi: "", // numero sedi totali (inclusa questa), se multisede = "Si"
   // Note libere
   noteSezioneA: "",
 };
@@ -63,6 +66,7 @@ export const OPZIONI = {
   sitoWeb: ["Aggiornato", "Datato", "Assente"],
   socialStato: ["Attivo", "Poco attivo", "Assente"],
   appPropria: ["Si (app propria)", "Si (app del gestionale)", "No"],
+  multisede: ["Si", "No"],
 };
 
 /**
@@ -228,6 +232,9 @@ export function calcolaSemaforiA(data) {
     }
     result.googleRecensioni = { semaforo, needsCallFlag: false, isKO: false };
   }
+
+  // Multisede - informativo, nessun semaforo
+  result.multisede = { semaforo: SEMAFORO.NEUTRO, needsCallFlag: false, isKO: false };
 
   // A.18 App propria del centro
   switch (data.appPropria) {

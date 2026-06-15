@@ -140,6 +140,16 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
               Per ogni tesserato PSL guadagni 15,40€ netti. Con la federazione pagavi.
             </li>
           )}
+          {dataA.multisede === "Si" && (
+            <li>
+              Avendo piu sedi ({dataA.numeroSedi || "piu di una"}), puoi accedere a uno sconto maggiore sul pacchetto PSL applicato su tutte le strutture.
+            </li>
+          )}
+          {dataA.multisede === "Si" && (dataA.affiliazione || []).includes("ACSI") && (
+            <li>
+              Per i centri multisede affiliati ACSI possiamo studiare condizioni piu favorevoli sul prezzo dei cartellini, aumentando il guadagno per ogni tesserato.
+            </li>
+          )}
         </ul>
       </Section>
 

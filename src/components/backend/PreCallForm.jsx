@@ -237,6 +237,27 @@ export default function PreCallForm({ data, semafori, onChange }) {
         fieldKey="appPropria"
       />
 
+      <SelectField
+        label="Il centro ha piu sedi (multisede)?"
+        value={data.multisede}
+        onChange={set("multisede")}
+        options={OPZIONI.multisede}
+        semaforo={semafori.multisede?.semaforo}
+
+        sectionKey="sectionA"
+        fieldKey="multisede"
+      />
+      {data.multisede === "Si" && (
+        <NumberField
+          label="↳ Quante sedi in totale?"
+          value={data.numeroSedi}
+          onChange={set("numeroSedi")}
+
+          sectionKey="sectionA"
+          fieldKey="numeroSedi"
+        />
+      )}
+
       <TextAreaField
         label="Note libere (Sezione A)"
         value={data.noteSezioneA}

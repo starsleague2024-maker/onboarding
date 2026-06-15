@@ -1,4 +1,4 @@
-import RadarChart from "./RadarChart";
+import BarChart from "./BarChart";
 import { COLORS } from "../theme";
 import { DIMENSIONI } from "../models/radar";
 
@@ -16,7 +16,7 @@ export default function RadarSummary({ series, legenda, title }) {
         </h3>
       )}
 
-      <RadarChart labels={DIMENSIONI} series={series} />
+      <BarChart labels={DIMENSIONI} series={series} />
 
       {series.length > 1 && (
         <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "8px", flexWrap: "wrap" }}>
@@ -24,12 +24,12 @@ export default function RadarSummary({ series, legenda, title }) {
             <div key={i} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.85rem", color: COLORS.text }}>
               <span
                 style={{
-                  width: "14px",
-                  height: "3px",
+                  width: "16px",
+                  height: "10px",
                   background: s.color,
+                  opacity: s.dashed ? 0.55 : 1,
                   display: "inline-block",
-                  borderTop: s.dashed ? `2px dashed ${s.color}` : "none",
-                  borderBottom: s.dashed ? "none" : `3px solid ${s.color}`,
+                  borderRadius: "2px",
                 }}
               />
               {s.name}

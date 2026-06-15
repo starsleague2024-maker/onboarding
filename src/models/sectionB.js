@@ -18,7 +18,7 @@ export const initialSectionB = {
   b1_1_vincoliFITP: "",        // "Nessuno" | "Alcuni" | "Tutti" -- mostrato solo se A.3 affiliazione include "FITP"
   b1_1_quantiVincolati: "",     // testo, se "Alcuni"
   b1_2_campiDisponibiliPSL: "", // "0" | "1" | "2" | "3+"
-  b1_3_clausolaResponsabilita: "", // "N/A" | "Si" | "No"
+  b1_3_clausolaResponsabilita: "", // "Si" | "No" | "In valutazione"
 
   // B2 - Base clienti
   b2_1_prenotazioniSettimana: "", // "<10" | "10-20" | "21-40" | "40+"
@@ -72,7 +72,7 @@ export const OPZIONI_B = {
   b0_1_appGestionaleMotivo: ["Non si trovano bene", "Non sanno sfruttarla", "I giocatori non la usano", "Altro"],
   b1_1_vincoliFITP: ["Nessuno", "Alcuni", "Tutti"],
   b1_2_campiDisponibiliPSL: ["0", "1", "2", "3+"],
-  b1_3_clausolaResponsabilita: ["N/A", "Si", "No"],
+  b1_3_clausolaResponsabilita: ["Si", "No", "In valutazione"],
 
   b2_1_prenotazioniSettimana: ["<10", "10-20", "21-40", "40+"],
   b2_2_canaleComunicazione: ["Nessuno", "Poco gestito", "Attivo e aggiornato"],
@@ -144,9 +144,9 @@ export function calcolaSemaforiB(data) {
 
   // B1.3 clausola responsabilita
   switch (data.b1_3_clausolaResponsabilita) {
-    case "N/A": result.b1_3_clausolaResponsabilita = sem(SEMAFORO.VERDE); break;
-    case "Si": result.b1_3_clausolaResponsabilita = sem(SEMAFORO.GIALLO); break;
+    case "Si": result.b1_3_clausolaResponsabilita = sem(SEMAFORO.VERDE); break;
     case "No": result.b1_3_clausolaResponsabilita = sem(SEMAFORO.ROSSO); break;
+    case "In valutazione": result.b1_3_clausolaResponsabilita = sem(SEMAFORO.ARANCIONE); break;
     default: result.b1_3_clausolaResponsabilita = sem(SEMAFORO.NEUTRO);
   }
 

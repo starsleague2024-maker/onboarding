@@ -2,6 +2,7 @@
 // KO assoluti, incongruenze, semaforo finale, raccomandazioni
 
 import { SEMAFORO } from "./sectionA";
+import { labelForField } from "./fieldLabels";
 
 /**
  * Calcola il semaforo "corretto" di A.6 (campi coperti), tenendo conto
@@ -141,7 +142,7 @@ export function calcolaAnalisiFinale(dataA, dataB, semaforiA, semaforiB) {
     raccomandazione = `Non idoneo al momento. Motivo: ${motivi}. Ricontattare se risolti.`;
   } else if (conteggio.arancione >= 2) {
     semaforoFinale = SEMAFORO.ARANCIONE;
-    const punti = arancioniDettaglio.map((p) => `${p.section}.${p.code}`).join(", ");
+    const punti = arancioniDettaglio.map((p) => labelForField(p.section, p.code)).join(", ");
     raccomandazione = `Potenziale confermato. Risolvere prima: ${punti}. Ricontattare quando risolti.`;
   } else {
     semaforoFinale = SEMAFORO.VERDE;
