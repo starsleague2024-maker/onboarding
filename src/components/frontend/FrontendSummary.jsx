@@ -95,37 +95,11 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
 
       {/* Confronto costi */}
       <Section title="Confronto costi" feedbackKey="frontend_confronto_costi">
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ borderBottom: `2px solid ${COLORS.navy}` }}>
-              <th style={{ textAlign: "left", padding: "8px" }}>Voce</th>
-              <th style={{ textAlign: "right", padding: "8px" }}>Oggi</th>
-              <th style={{ textAlign: "right", padding: "8px" }}>Con PSL</th>
-            </tr>
-          </thead>
-          <tbody>
-            {confronto.righe.map((r, i) => (
-              <tr key={i} style={{ borderBottom: "1px solid #f3f4f6" }}>
-                <td style={{ padding: "8px" }}>{r.voce}</td>
-                <td style={{ textAlign: "right", padding: "8px" }}>
-                  {typeof r.oggi === "number" ? `${r.oggi.toFixed(2)} €` : r.oggi}
-                </td>
-                <td style={{ textAlign: "right", padding: "8px" }}>
-                  {typeof r.conPSL === "number"
-                    ? r.conPSL < 0
-                      ? `+${Math.abs(r.conPSL).toFixed(2)} € (guadagno)`
-                      : `${r.conPSL.toFixed(2)} €`
-                    : r.conPSL}
-                </td>
-              </tr>
-            ))}
-            <tr style={{ fontWeight: "bold", borderTop: "2px solid #e5e7eb" }}>
-              <td style={{ padding: "8px" }}>Totale</td>
-              <td style={{ textAlign: "right", padding: "8px" }}>{confronto.totaleOggi.toFixed(2)} €</td>
-              <td style={{ textAlign: "right", padding: "8px" }}>{confronto.totalePSL.toFixed(2)} €</td>
-            </tr>
-          </tbody>
-        </table>
+        {confronto.modalita === "fitp" ? (
+          <ConfrontoCostiFITP confronto={confronto} />
+        ) : (
+          <ConfrontoCostiSemplice confronto={confronto} />
+        )}
       </Section>
 
       {/* Argomenti commerciali */}
@@ -185,5 +159,104 @@ function Section({ title, children, feedbackKey, feedbackSection = "frontend" })
       </FeedbackWrapper>
       {children}
     </div>
+  );
+}
+
+const tdL = { padding: "6px 8px", textAlign: "left" };
+const tdR = { padding: "6px 8px", textAlign: "right" };
+const thStyle = { padding: "6px 8px", textAlign: "right", fontWeight: 700, fontSize: "0.85rem" };
+
+function TableRow({ label, oggi, conPSL, bold }) {
+  const style = bold ? { fontWeight: 700, borderTop: "2px solid #e5e7eb" } : { borderBottom: "1px solid #f3f4f6" };
+  return (
+    <tr style={style}>
+      <td style={tdL}>{label}</td>
+      <td style={tdR}>{typeof oggi === "number" ? `${oggi.toFixed(2)} €` : oggi}</td>
+      <td style={tdR}>{typeof conPSL === "number" ? `${conPSL.toFixed(2)} €` : conPSL}</td>
+    </tr>
+  );
+}
+
+function ConfrontoCostiFITP({ confronto }) {
+  const costiRighe = confronto.righe.filter((r) => r.tipo === "costo" || !r.tipo);
+  const guadagniRighe = confronto.righe.filter((r) => r.tipo === "guadagno");
+  const totaleCostiOggi = costiRighe.reduce((s, r) => s + (typeof r.oggi === "number" ? r.oggi : 0), 0);
+  const totaleCostiPSL = costiRighe.reduce((s, r) => s + (typeof r.conPSL === "number" ? r.conPSL : 0), 0);
+  const guadagnoOggi = guadagniRighe.reduce((s, r) => s + (typeof r.oggi === "number" ? r.oggi : 0), 0);
+  const guadagnoPSL = guadagniRighe.reduce((s, r) => s + (typeof r.conPSL === "number" ? Math.abs(r.conPSL) : 0), 0);
+  const nettoOggi = totaleCostiOggi - guadagnoOggi;
+  const nettoPSL = totaleCostiPSL - guadagnoPSL;
+
+  return (
+    <>
+      <p style={{ fontSize: "0.8rem", color: COLORS.textMuted, margin: "0 0 8px" }}>Costi annuali (IVA esclusa ove applicabile)</p>
+      <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "16px" }}>
+        <thead>
+          <tr style={{ borderBottom: `2px solid ${COLORS.navy}` }}>
+            <th style={{ ...thStyle, textAlign: "left" }}>COSTI</th>
+            <th style={thStyle}>Oggi (FITP)</th>
+            <th style={thStyle}>Con PSL/ACSI</th>
+          </tr>
+        </thead>
+        <tbody>
+          {costiRighe.map((r, i) => <TableRow key={i} label={r.voce} oggi={r.oggi} conPSL={r.conPSL} />)}
+          <TableRow label="Totale costi" oggi={totaleCostiOggi} conPSL={totaleCostiPSL} bold />
+        </tbody>
+      </table>
+
+      <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "16px" }}>
+        <thead>
+          <tr style={{ borderBottom: `2px solid ${COLORS.navy}` }}>
+            <th style={{ ...thStyle, textAlign: "left" }}>GUADAGNI DA TESSERAMENTO</th>
+            <th style={thStyle}>Oggi (FITP) — cashback federazione</th>
+            <th style={thStyle}>Con PSL/ACSI — guadagno immediato</th>
+          </tr>
+        </thead>
+        <tbody>
+          {guadagniRighe.map((r, i) => (
+            <TableRow key={i} label={r.voce}
+              oggi={typeof r.oggi === "number" ? r.oggi : 0}
+              conPSL={typeof r.conPSL === "number" ? Math.abs(r.conPSL) : r.conPSL}
+            />
+          ))}
+        </tbody>
+      </table>
+
+      <div style={{ padding: "12px", borderRadius: "8px", background: "#f0fdf4", border: "1px solid #86efac" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr style={{ borderBottom: "2px solid #86efac" }}>
+              <th style={{ ...thStyle, textAlign: "left" }}>COSTO NETTO EFFETTIVO</th>
+              <th style={thStyle}>Oggi (FITP)</th>
+              <th style={thStyle}>Con PSL/ACSI</th>
+            </tr>
+          </thead>
+          <tbody>
+            <TableRow label="Totale costi − guadagno tesseramento" oggi={nettoOggi} conPSL={nettoPSL} bold />
+          </tbody>
+        </table>
+        <p style={{ fontSize: "0.8rem", color: "#166534", marginTop: "8px", marginBottom: 0 }}>
+          Con PSL il guadagno immediato sui tesseramenti ({guadagnoPSL.toFixed(2)} €) si sottrae direttamente al costo del pacchetto annuale ({totaleCostiPSL.toFixed(2)} €), portando il costo netto reale a {nettoPSL.toFixed(2)} €/anno.
+        </p>
+      </div>
+    </>
+  );
+}
+
+function ConfrontoCostiSemplice({ confronto }) {
+  return (
+    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <thead>
+        <tr style={{ borderBottom: `2px solid ${COLORS.navy}` }}>
+          <th style={{ ...thStyle, textAlign: "left" }}>Voce</th>
+          <th style={thStyle}>Oggi</th>
+          <th style={thStyle}>Con PSL</th>
+        </tr>
+      </thead>
+      <tbody>
+        {confronto.righe.map((r, i) => <TableRow key={i} label={r.voce} oggi={r.oggi} conPSL={r.conPSL} />)}
+        <TableRow label="Totale" oggi={confronto.totaleOggi} conPSL={confronto.totalePSL} bold />
+      </tbody>
+    </table>
   );
 }

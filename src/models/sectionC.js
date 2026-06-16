@@ -73,9 +73,9 @@ const FITP_LABELS = {
   },
   tesseramento: {
     title: "Tesseramento",
-    nonAgonisticaOver16: "Non agonistica over 16",
-    agonisticaOver16_3a4a5a: "Agonistica over 16 (3a/4a/5a categoria)",
-    agonisticaOver16_1a2a: "Agonistica over 16 (1a/2a categoria)",
+    nonAgonisticaOver16: "Non agonistica",
+    agonisticaOver16_3a4a5a: "Agonistica (3a/4a/5a categoria)",
+    agonisticaOver16_1a2a: "Agonistica (1a/2a categoria)",
     nonAgonisticaUnder16: "Non agonistica under 16",
     agonisticaUnder16_3a4a5a: "Agonistica under 16 (3a/4a/5a categoria)",
     agonisticaUnder16_1a2a: "Agonistica under 16 (1a/2a categoria)",
@@ -215,8 +215,9 @@ export function calcolaConfrontoCategorieFITP(fitpData) {
       key: "tesseramento",
       label: "Tesseramento",
       oggi: costi.breakdown.tesseramento,
-      conPSL: -psl.guadagnoTesseramento, // negativo = cashback per il centro
-      conPSLLabel: `Cashback totale ${psl.guadagnoTesseramento.toFixed(2)} €`,
+      tipo: "guadagno",
+      conPSL: -psl.guadagnoTesseramento,
+      conPSLLabel: `Guadagno immediato totale ${psl.guadagnoTesseramento.toFixed(2)} €`,
       subcategorie: [
         {
           label: "Over18",
@@ -236,6 +237,7 @@ export function calcolaConfrontoCategorieFITP(fitpData) {
     },
     {
       key: "tecnici",
+      tipo: "costo",
       label: "Tecnici",
       oggi: costi.breakdown.tecnici,
       conPSL: 0,
@@ -243,6 +245,7 @@ export function calcolaConfrontoCategorieFITP(fitpData) {
     },
     {
       key: "scuolaPadel",
+      tipo: "costo",
       label: "Scuola Padel",
       oggi: costi.breakdown.scuolaPadel,
       conPSL: 0,
@@ -250,6 +253,7 @@ export function calcolaConfrontoCategorieFITP(fitpData) {
     },
     {
       key: "tornei",
+      tipo: "costo",
       label: "Tornei",
       oggi: costi.breakdown.tornei,
       conPSL: 0,
@@ -257,6 +261,7 @@ export function calcolaConfrontoCategorieFITP(fitpData) {
     },
     {
       key: "campionatiSquadre",
+      tipo: "costo",
       label: "Campionati a squadre",
       oggi: costi.breakdown.campionatiSquadre,
       conPSL: 0,
@@ -288,9 +293,10 @@ export function generaConfrontoFinale(dataA, dataB, sectionC, pslPackage = PSL_P
       modalita: "semplice",
       righe: [
         {
-          voce: "Software gestione",
+          voce: "Software gestione / Pacchetto PSL",
           oggi: costoGestionale,
-          conPSL: "Incluso",
+          conPSL: costoPacchettoAnnuale,
+          tipo: "costo",
         },
       ],
       totaleOggi: costoGestionale,
@@ -316,6 +322,7 @@ export function generaConfrontoFinale(dataA, dataB, sectionC, pslPackage = PSL_P
       voce: c.label,
       oggi: c.oggi,
       conPSL: c.key === "tesseramento" ? c.conPSL : c.conPSLLabel,
+      tipo: c.tipo || "costo",
     })),
   ];
 

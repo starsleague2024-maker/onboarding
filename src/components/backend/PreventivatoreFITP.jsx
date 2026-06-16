@@ -82,18 +82,53 @@ export default function PreventivatoreFITP({ sectionC, onChange, dataB }) {
           <FeedbackWrapper sectionKey="sectionC" fieldKey={`fitp.${category}.titolo`} label={`${FITP_LABELS[category].title} - sezione`}>
             <h4 style={{ color: COLORS.gold, marginBottom: "8px" }}>{FITP_LABELS[category].title}</h4>
           </FeedbackWrapper>
-          {Object.keys(fitp[category]).map((key) => (
-            <NumberField
-              key={key}
-              label={FITP_LABELS[category][key]}
-              value={fitp[category][key]}
-              onChange={setCategoryField(category, key)}
-              suffix="quantita"
-
-              sectionKey="sectionC"
-              fieldKey={`fitp.${category}.${key}`}
-            />
-          ))}
+          {category === "tesseramento" ? (
+            <>
+              <p style={{ color: COLORS.textMuted, fontSize: "0.8rem", margin: "0 0 8px" }}>
+                Le categorie Over16 e Under16 FITP vengono usate per calcolare il guadagno PSL su Over18 e Under18.
+              </p>
+              <div style={{ marginBottom: "8px" }}>
+                <strong style={{ fontSize: "0.85rem", color: COLORS.text }}>Over18</strong>
+                {["nonAgonisticaOver16", "agonisticaOver16_3a4a5a", "agonisticaOver16_1a2a"].map((key) => (
+                  <NumberField
+                    key={key}
+                    label={FITP_LABELS.tesseramento[key]}
+                    value={fitp.tesseramento[key]}
+                    onChange={setCategoryField("tesseramento", key)}
+                    suffix="quantita"
+                    sectionKey="sectionC"
+                    fieldKey={`fitp.tesseramento.${key}`}
+                  />
+                ))}
+              </div>
+              <div style={{ marginBottom: "8px" }}>
+                <strong style={{ fontSize: "0.85rem", color: COLORS.text }}>Under18</strong>
+                {["nonAgonisticaUnder16", "agonisticaUnder16_3a4a5a", "agonisticaUnder16_1a2a"].map((key) => (
+                  <NumberField
+                    key={key}
+                    label={FITP_LABELS.tesseramento[key]}
+                    value={fitp.tesseramento[key]}
+                    onChange={setCategoryField("tesseramento", key)}
+                    suffix="quantita"
+                    sectionKey="sectionC"
+                    fieldKey={`fitp.tesseramento.${key}`}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            Object.keys(fitp[category]).map((key) => (
+              <NumberField
+                key={key}
+                label={FITP_LABELS[category][key]}
+                value={fitp[category][key]}
+                onChange={setCategoryField(category, key)}
+                suffix="quantita"
+                sectionKey="sectionC"
+                fieldKey={`fitp.${category}.${key}`}
+              />
+            ))
+          )}
           <FeedbackWrapper sectionKey="sectionC" fieldKey={`fitp.${category}.confronto`} label={`${FITP_LABELS[category]?.title || category} - confronto FITP vs PSL`}>
             <CompareRow categoria={byKey[category]} />
           </FeedbackWrapper>
@@ -138,7 +173,7 @@ function CompareRow({ categoria }) {
               <span style={{ color: COLORS.text, fontWeight: 600 }}>{sub.oggi.toFixed(2)} €</span>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: COLORS.textMuted }}>Con PSL/ACSI (cashback)</span>
+              <span style={{ color: COLORS.textMuted }}>Con PSL/ACSI (guadagno immediato)</span>
               <span style={{ color: COLORS.text, fontWeight: 600 }}>
                 +{sub.conPSL.toFixed(2)} € ({sub.numTesserati} x {sub.tariffaPSL.toFixed(2)}€)
               </span>
