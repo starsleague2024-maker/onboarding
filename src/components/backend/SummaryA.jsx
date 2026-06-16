@@ -1,5 +1,6 @@
 import { calcolaRadar, generaLegenda } from "../../models/radar";
 import RadarSummary from "../RadarSummary";
+import { FeedbackWrapper } from "../FeedbackIcon";
 import { COLORS } from "../../theme";
 
 export default function SummaryA({ data, semafori }) {
@@ -12,10 +13,12 @@ export default function SummaryA({ data, semafori }) {
         Quadro generale del centro in base ai dati raccolti finora. Usa la legenda per preparare i punti da toccare in call.
       </p>
 
-      <RadarSummary
-        series={[{ name: "Pre-call", values: scores, color: COLORS.gold }]}
-        legenda={legenda}
-      />
+      <FeedbackWrapper sectionKey="ui" fieldKey="precall_radar" label="Grafico radar pre-call">
+        <RadarSummary
+          series={[{ name: "Pre-call", values: scores, color: COLORS.gold }]}
+          legenda={legenda}
+        />
+      </FeedbackWrapper>
 
       {data.noteSezioneA && (
         <div style={{ marginTop: "16px" }}>

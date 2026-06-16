@@ -1,4 +1,5 @@
 import BarChart from "./BarChart";
+import { FeedbackWrapper } from "./FeedbackIcon";
 import { COLORS } from "../theme";
 import { DIMENSIONI } from "../models/radar";
 
@@ -11,12 +12,16 @@ export default function RadarSummary({ series, legenda, title }) {
   return (
     <div>
       {title && (
-        <h3 style={{ borderBottom: `2px solid ${COLORS.gold}`, paddingBottom: "4px", color: COLORS.text, marginBottom: "8px" }}>
-          {title}
-        </h3>
+        <FeedbackWrapper sectionKey="ui" fieldKey="grafico_titolo" label={`Grafico: ${title}`}>
+          <h3 style={{ borderBottom: `2px solid ${COLORS.gold}`, paddingBottom: "4px", color: COLORS.text, marginBottom: "8px" }}>
+            {title}
+          </h3>
+        </FeedbackWrapper>
       )}
 
-      <BarChart labels={DIMENSIONI} series={series} />
+      <FeedbackWrapper sectionKey="ui" fieldKey="grafico_barre" label="Grafico a barre - serie e dimensioni">
+        <BarChart labels={DIMENSIONI} series={series} />
+      </FeedbackWrapper>
 
       {series.length > 1 && (
         <div style={{ display: "flex", justifyContent: "center", gap: "16px", marginTop: "8px", flexWrap: "wrap" }}>
@@ -41,8 +46,8 @@ export default function RadarSummary({ series, legenda, title }) {
       {legenda && (
         <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "8px" }}>
           {legenda.map((l, i) => (
+            <FeedbackWrapper key={i} sectionKey="ui" fieldKey={`legenda_${l.dimensione}`} label={`Legenda: ${l.dimensione}`}>
             <div
-              key={i}
               style={{
                 padding: "10px 12px",
                 borderRadius: "8px",
@@ -62,6 +67,7 @@ export default function RadarSummary({ series, legenda, title }) {
                 <strong>In call:</strong> {l.daChiedere}
               </p>
             </div>
+            </FeedbackWrapper>
           ))}
         </div>
       )}

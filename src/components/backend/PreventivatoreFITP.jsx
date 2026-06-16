@@ -1,4 +1,5 @@
 import { NumberField, SelectField } from "../Fields";
+import { FeedbackWrapper } from "../FeedbackIcon";
 import { FITP_LABELS, calcolaCostiFITP, calcolaCostiPSL, calcolaConfrontoCategorieFITP, PSL_PACKAGE_DEFAULT } from "../../models/sectionC";
 import { COLORS } from "../../theme";
 
@@ -51,7 +52,9 @@ export default function PreventivatoreFITP({ sectionC, onChange, dataB }) {
       </p>
 
       <div style={{ marginBottom: "16px" }}>
-        <h4 style={{ color: COLORS.gold, marginBottom: "8px" }}>{FITP_LABELS.affiliazione.title}</h4>
+        <FeedbackWrapper sectionKey="sectionC" fieldKey="fitp.affiliazione" label="Affiliazione - sezione">
+          <h4 style={{ color: COLORS.gold, marginBottom: "8px" }}>{FITP_LABELS.affiliazione.title}</h4>
+        </FeedbackWrapper>
         <SelectField
           label="Tipo riaffiliazione"
           value={fitp.affiliazione.riaffiliazioneTuttiCampi ? "Tutti i campi" : "Standard"}
@@ -69,12 +72,16 @@ export default function PreventivatoreFITP({ sectionC, onChange, dataB }) {
           sectionKey="sectionC"
           fieldKey="fitp.affiliazione.numCampiPerTassa"
         />
-        <CompareRow categoria={byKey.affiliazione} />
+        <FeedbackWrapper sectionKey="sectionC" fieldKey="fitp.affiliazione.confronto" label="Affiliazione - confronto FITP vs PSL">
+          <CompareRow categoria={byKey.affiliazione} />
+        </FeedbackWrapper>
       </div>
 
       {CATEGORY_ORDER.map((category) => (
         <div key={category} style={{ marginBottom: "16px" }}>
-          <h4 style={{ color: COLORS.gold, marginBottom: "8px" }}>{FITP_LABELS[category].title}</h4>
+          <FeedbackWrapper sectionKey="sectionC" fieldKey={`fitp.${category}.titolo`} label={`${FITP_LABELS[category].title} - sezione`}>
+            <h4 style={{ color: COLORS.gold, marginBottom: "8px" }}>{FITP_LABELS[category].title}</h4>
+          </FeedbackWrapper>
           {Object.keys(fitp[category]).map((key) => (
             <NumberField
               key={key}
@@ -87,10 +94,13 @@ export default function PreventivatoreFITP({ sectionC, onChange, dataB }) {
               fieldKey={`fitp.${category}.${key}`}
             />
           ))}
-          <CompareRow categoria={byKey[category]} />
+          <FeedbackWrapper sectionKey="sectionC" fieldKey={`fitp.${category}.confronto`} label={`${FITP_LABELS[category]?.title || category} - confronto FITP vs PSL`}>
+            <CompareRow categoria={byKey[category]} />
+          </FeedbackWrapper>
         </div>
       ))}
 
+      <FeedbackWrapper sectionKey="sectionC" fieldKey="fitp.riepilogo_annuale" label="Riepilogo annuale - box totali">
       <div
         style={{
           padding: "12px",
@@ -108,6 +118,7 @@ export default function PreventivatoreFITP({ sectionC, onChange, dataB }) {
         <RowTotal label="Totale netto con PSL" value={psl.totaleNetto} bold />
         <RowTotal label="Risparmio stimato" value={(costi.totale + costoGestionale) - psl.totaleNetto} bold highlight />
       </div>
+      </FeedbackWrapper>
     </div>
   );
 }

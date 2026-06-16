@@ -5,6 +5,7 @@ import { calcolaRadar, calcolaObiettivoPSL, generaLegenda } from "../../models/r
 import { centroAffiliatoFITP, generaConfrontoFinale, NOTA_TRATTATIVA_TRATTENUTA } from "../../models/sectionC";
 import PreventivatoreFITP from "./PreventivatoreFITP";
 import RadarSummary from "../RadarSummary";
+import { FeedbackWrapper } from "../FeedbackIcon";
 
 export default function BackendSummary({ session, analisi, onChange, semaforiA, semaforiB, campiCopertiEffettivi }) {
   const radarPre = calcolaRadar({ semaforiA });
@@ -20,6 +21,7 @@ export default function BackendSummary({ session, analisi, onChange, semaforiA, 
 
   return (
     <div>
+      <FeedbackWrapper sectionKey="ui" fieldKey="backend_radar" label="Radar/grafico analisi finale">
       <RadarSummary
         title="Confronto: prima e dopo la call"
         series={[
@@ -29,6 +31,7 @@ export default function BackendSummary({ session, analisi, onChange, semaforiA, 
         ]}
         legenda={legendaPost}
       />
+      </FeedbackWrapper>
 
       <div style={{ display: "flex", gap: "12px" }}>
         <div style={{ flex: 1 }}>
@@ -127,6 +130,7 @@ export default function BackendSummary({ session, analisi, onChange, semaforiA, 
         </div>
       )}
 
+      <FeedbackWrapper sectionKey="ui" fieldKey="backend_preventivatore_titolo" label="Preventivatore - titolo e sezione">
       <div style={{ marginBottom: "16px" }}>
         <h4>Preventivatore</h4>
         {centroAffiliatoFITP(session.sectionA) ? (
@@ -139,6 +143,7 @@ export default function BackendSummary({ session, analisi, onChange, semaforiA, 
           <SimplePreventivatore session={session} />
         )}
       </div>
+      </FeedbackWrapper>
 
       <TextAreaField
         label="Note interne (testo libero)"

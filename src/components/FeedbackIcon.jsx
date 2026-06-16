@@ -4,7 +4,6 @@ import { COLORS } from "../theme";
 
 /**
  * Icona 💬 da affiancare a un campo. Visibile solo se la modalita feedback e' attiva.
- * Cliccandola si apre un piccolo editor per scrivere una nota legata a quel campo.
  */
 export default function FeedbackIcon({ sectionKey, fieldKey, label }) {
   const { enabled, addNote, openFieldKey, setOpenFieldKey } = useFeedback();
@@ -95,5 +94,26 @@ export default function FeedbackIcon({ sectionKey, fieldKey, label }) {
         </div>
       )}
     </span>
+  );
+}
+
+/**
+ * Wrapper generico per aggiungere feedback a qualsiasi elemento:
+ * titoli, righe, grafici, box, ecc.
+ * Mostra il contenuto con l'icona 💬 affiancata (in alto a destra).
+ *
+ * Usage:
+ *   <FeedbackWrapper sectionKey="sectionC" fieldKey="grafico_radar" label="Grafico radar">
+ *     <h3>Il mio titolo</h3>
+ *   </FeedbackWrapper>
+ */
+export function FeedbackWrapper({ sectionKey, fieldKey, label, children, inline = false }) {
+  return (
+    <div style={{ position: "relative", display: inline ? "inline-flex" : "block", alignItems: inline ? "center" : undefined, gap: inline ? "4px" : undefined }}>
+      {children}
+      <span style={{ position: inline ? "static" : "absolute", top: inline ? undefined : "2px", right: inline ? undefined : "0px", display: "inline-flex", alignItems: "center" }}>
+        <FeedbackIcon sectionKey={sectionKey} fieldKey={fieldKey} label={label} />
+      </span>
+    </div>
   );
 }

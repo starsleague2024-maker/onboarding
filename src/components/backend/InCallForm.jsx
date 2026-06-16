@@ -1,3 +1,4 @@
+import { FeedbackWrapper } from "../FeedbackIcon";
 import { OPZIONI_B } from "../../models/sectionB";
 import { TextField, NumberField, SelectField, MultiSelectField, TextAreaField } from "../Fields";
 
@@ -14,7 +15,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
 
       {tesseratiNonTrovati && (
         <>
-          <h4>B0 — Tesserati</h4>
+          <FeedbackWrapper sectionKey="sectionB" fieldKey="h4_b0__tesserati" label="Titolo sezione: B0 — Tesserati"><h4>B0 — Tesserati</h4></FeedbackWrapper>
           <NumberField
             label="B.0 Quanti tesserati avete (totale)? (non trovato in pre-call)"
             value={data.b0_tesseratiTotali}
@@ -29,7 +30,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
 
       {usaAppGestionale && (
         <>
-          <h4>App del gestionale</h4>
+          <FeedbackWrapper sectionKey="sectionB" fieldKey="h4_app_del_gestionale" label="Titolo sezione: App del gestionale"><h4>App del gestionale</h4></FeedbackWrapper>
           <SelectField
             label="Il centro/i giocatori utilizzano effettivamente l'app del gestionale?"
             value={data.b0_1_appGestionaleUsata}
@@ -66,7 +67,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         </>
       )}
 
-      <h4>B1 — Campi e vincoli</h4>
+      <FeedbackWrapper sectionKey="sectionB" fieldKey="h4_b1__campi_e_vincoli" label="Titolo sezione: B1 — Campi e vincoli"><h4>B1 — Campi e vincoli</h4></FeedbackWrapper>
 
       {zeroCampiCoperti && (
         <>
@@ -140,7 +141,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
       </>
       )}
 
-      <h4>B2 — Base clienti reale</h4>
+      <FeedbackWrapper sectionKey="sectionB" fieldKey="h4_b2__base_clienti_reale" label="Titolo sezione: B2 — Base clienti reale"><h4>B2 — Base clienti reale</h4></FeedbackWrapper>
       <SelectField
         label="B.2.1 Prenotazioni in una settimana tipo?"
         value={data.b2_1_prenotazioniSettimana}
@@ -197,7 +198,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         fieldKey="b2_4_tipiEventi"
       />
 
-      <h4>B3 — Stagionalita</h4>
+      <FeedbackWrapper sectionKey="sectionB" fieldKey="h4_b3__stagionalita" label="Titolo sezione: B3 — Stagionalita"><h4>B3 — Stagionalita</h4></FeedbackWrapper>
       <SelectField
         label="B.3.1 Stagionalita del centro?"
         value={data.b3_1_stagionalita}
@@ -222,7 +223,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         Nota: periodo morto non è KO automatico — valutare se PSL può colmarlo con eventi.
       </p>
 
-      <h4>B4 — Staff</h4>
+      <FeedbackWrapper sectionKey="sectionB" fieldKey="h4_b4__staff" label="Titolo sezione: B4 — Staff"><h4>B4 — Staff</h4></FeedbackWrapper>
       <NumberField
         label="B.4.1 Quante persone lavorano nel centro?"
         value={data.b4_1_personeStaff}
@@ -253,7 +254,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         fieldKey="b4_3_maestriStabili"
       />
 
-      <h4>B5 — Gestionale e costi</h4>
+      <FeedbackWrapper sectionKey="sectionB" fieldKey="h4_b5__gestionale_e_costi" label="Titolo sezione: B5 — Gestionale e costi"><h4>B5 — Gestionale e costi</h4></FeedbackWrapper>
       <SelectField
         label="B.5.1 Software di gestione attuale?"
         value={data.b5_1_softwareGestione}
@@ -376,7 +377,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         </div>
       </div>
 
-      <h4>B6 — Pricing</h4>
+      <FeedbackWrapper sectionKey="sectionB" fieldKey="h4_b6__pricing" label="Titolo sezione: B6 — Pricing"><h4>B6 — Pricing</h4></FeedbackWrapper>
       <SelectField
         label="B.6.1 Abbonamenti o tessere per clienti abituali?"
         value={data.b6_1_abbonamenti}
@@ -409,7 +410,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         fieldKey="b6_2_prezziDifferenziati"
       />
 
-      <h4>B7 — Tornei e montepremi</h4>
+      <FeedbackWrapper sectionKey="sectionB" fieldKey="h4_b7__tornei_e_montepremi" label="Titolo sezione: B7 — Tornei e montepremi"><h4>B7 — Tornei e montepremi</h4></FeedbackWrapper>
       <SelectField
         label="B.7.1 Organizzate tornei con montepremi?"
         value={data.b7_1_organizzaTornei}
@@ -442,7 +443,7 @@ export default function InCallForm({ data, semafori, onChange, dataA }) {
         </>
       )}
 
-      <h4>B8 — Motivazione</h4>
+      <FeedbackWrapper sectionKey="sectionB" fieldKey="h4_b8__motivazione" label="Titolo sezione: B8 — Motivazione"><h4>B8 — Motivazione</h4></FeedbackWrapper>
       <SelectField
         label="B.8.1 Problema principale da risolvere?"
         value={data.b8_1_problemaPrincipale}

@@ -1,5 +1,6 @@
 import SemaforoBadge from "../SemaforoBadge";
 import { ARGOMENTI_COMMERCIALI, ARGOMENTI_ACSI } from "../../models/sectionC";
+import { FeedbackWrapper } from "../FeedbackIcon";
 import { SEMAFORO } from "../../models/sectionA";
 import { COLORS } from "../../theme";
 
@@ -93,7 +94,7 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
       </Section>
 
       {/* Confronto costi */}
-      <Section title="Confronto costi">
+      <Section title="Confronto costi" feedbackKey="frontend_confronto_costi">
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: `2px solid ${COLORS.navy}` }}>
@@ -128,7 +129,7 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
       </Section>
 
       {/* Argomenti commerciali */}
-      <Section title="Perche scegliere PSL">
+      <Section title="Perche scegliere PSL" feedbackKey="frontend_argomenti_commerciali">
         <ul>
           {ARGOMENTI_COMMERCIALI.map((a, i) => (
             <li key={i}>{a}</li>
@@ -176,10 +177,12 @@ export default function FrontendSummary({ session, dataA, analisi, confronto }) 
   );
 }
 
-function Section({ title, children }) {
+function Section({ title, children, feedbackKey, feedbackSection = "frontend" }) {
   return (
     <div style={{ marginBottom: "24px" }}>
-      <h3 style={{ borderBottom: `2px solid ${COLORS.gold}`, paddingBottom: "4px", color: COLORS.navy }}>{title}</h3>
+      <FeedbackWrapper sectionKey={feedbackSection} fieldKey={feedbackKey || `section_${title}`} label={`Sezione: ${title}`}>
+        <h3 style={{ borderBottom: `2px solid ${COLORS.gold}`, paddingBottom: "4px", color: COLORS.navy }}>{title}</h3>
+      </FeedbackWrapper>
       {children}
     </div>
   );
