@@ -312,24 +312,30 @@ export function generaConfrontoFinale(dataA, dataB, sectionC, pslPackage = PSL_P
 
   const costoGestionale = Number(dataB.b5_2_costoSoftwareAnnuale) || 0;
 
-  const righe = [
-    {
-      voce: "Software gestione",
-      oggi: costoGestionale,
-      conPSL: "Incluso",
-    },
-    ...categorie.map((c) => ({
-      voce: c.label,
-      oggi: c.oggi,
-      conPSL: c.key === "tesseramento" ? c.conPSL : c.conPSLLabel,
-      tipo: c.tipo || "costo",
-    })),
+  // Lato FITP: lista dettagliata costi attuali
+  const righeOggi = [
+    { voce: "Software gestione", oggi: costoGestionale, tipo: "costo" },
+    { voce: "Affiliazione/federazione", oggi: costiFITP.breakdown.affiliazione, tipo: "costo" },
+    { voce: "Tesseramento (cashback federazione)", oggi: costiFITP.breakdown.tesseramento, tipo: "guadagno" },
+    { voce: "Tecnici", oggi: costiFITP.breakdown.tecnici, tipo: "costo" },
+    { voce: "Scuola Padel", oggi: costiFITP.breakdown.scuolaPadel, tipo: "costo" },
+    { voce: "Tornei", oggi: costiFITP.breakdown.tornei, tipo: "costo" },
+    { voce: "Campionati a squadre", oggi: costiFITP.breakdown.campionatiSquadre, tipo: "costo" },
   ];
 
   return {
     modalita: "fitp",
-    righe,
+    righeOggi,
     categorie,
+    psl: {
+      costoPacchettoAnnuale: psl.costoPacchettoAnnuale,
+      guadagnoTesseramento: psl.guadagnoTesseramento,
+      guadagnoUnder18: psl.guadagnoUnder18,
+      guadagnoOver18: psl.guadagnoOver18,
+      totaleNetto: psl.totaleNetto,
+      tesseratiUnder18: costiFITP.tesseratiUnder18,
+      tesseratiOver18: costiFITP.tesseratiOver18,
+    },
     totaleOggi: costiFITP.totale + costoGestionale,
     totalePSL: psl.totaleNetto,
     risparmioStimato: (costiFITP.totale + costoGestionale) - psl.totaleNetto,

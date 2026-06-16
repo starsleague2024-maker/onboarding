@@ -181,6 +181,20 @@ export default function PreCallForm({ data, semafori, onChange }) {
         sectionKey="sectionA"
         fieldKey="sitoWeb"
       />
+      {data.sitoWeb && data.sitoWeb !== "Assente" && (
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "4px 0 12px 0" }}>
+          <input
+            type="checkbox"
+            id="prenotazioneOnlineSito"
+            checked={!!data.prenotazioneOnlineSito}
+            onChange={(e) => set("prenotazioneOnlineSito")(e.target.checked)}
+            style={{ width: "16px", height: "16px", cursor: "pointer" }}
+          />
+          <label htmlFor="prenotazioneOnlineSito" style={{ fontSize: "0.9rem", color: COLORS.text, cursor: "pointer" }}>
+            Il sito ha prenotazione online integrata
+          </label>
+        </div>
+      )}
 
       <SelectField
         label="A.12 Instagram"

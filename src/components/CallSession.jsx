@@ -209,7 +209,7 @@ export default function CallSession({ sessionId, onBack }) {
           ) : (
             <>
               <div style={{ background: COLORS.white, padding: "24px", borderRadius: "8px", border: `1px solid ${COLORS.border}`, color: COLORS.navy }}>
-                <FrontendSummary session={session} dataA={session.sectionA} analisi={analisi} confronto={confronto} />
+                <FrontendSummary session={session} dataA={session.sectionA} analisi={analisi} confronto={confronto} semaforiA={semaforiA} semaforiB={semaforiB} />
               </div>
               <div style={{ marginTop: "16px" }}>
                 <button onClick={() => setShowFrontend(false)} style={linkBtn}>

@@ -22,7 +22,7 @@ export const initialSectionA = {
   // A.2 - multi-select: puo avere piu forme giuridiche (es. ASD + SSD)
   formaGiuridica: [], // array di: "ASD" | "SSD" | "Impresa/SRL" | "Non trovata"
   // A.3 - multi-select: puo avere piu affiliazioni (es. FITP + ente promozione)
-  affiliazione: [], // array di: "ACSI" | "FITP" | "Altro EPS" | "Nessuna" | "Non trovata"
+  affiliazione: [], // array di: "ACSI" | "FITP" | "Altro EPS" | "Non trovata"
   // A.4 - tesserati dichiarati dal RASD (Sport e Salute). Se non trovato, si chiede in B.
   tesseratiRASD: "",
   // A.5
@@ -38,7 +38,8 @@ export const initialSectionA = {
   piattaformaPrenotazioni: "", // "Si" | "No" | ""
   gestionalePrenotazioni: "",  // backend brand: Playtomic / Wansport / Sport Clubbi / Due Palleggi
   // A.11
-  sitoWeb: "", // "Aggiornato" | "Datato" | "Assente"
+  sitoWeb: "",
+  prenotazioneOnlineSito: false, // true se il sito ha prenotazione online integrata // "Aggiornato" | "Datato" | "Assente"
   // A.12
   instagram: "", // "Attivo" | "Poco attivo" | "Assente"
   // A.13
@@ -59,7 +60,7 @@ export const initialSectionA = {
 // Opzioni dropdown
 export const OPZIONI = {
   formaGiuridica: ["ASD", "SSD", "Impresa/SRL", "Non trovata"],
-  affiliazione: ["ACSI", "FITP", "Altro EPS", "Nessuna", "Non trovata"],
+  affiliazione: ["ACSI", "FITP", "Altro EPS", "Non trovata"],
   regione: REGIONI,
   piattaformaPrenotazioni: ["Si", "No", "Non trovato"],
   gestionaleBrand: ["Playtomic", "Wansport", "Sport Clubbi", "Due Palleggi", "Altro"],
@@ -112,7 +113,7 @@ export function calcolaSemaforiA(data) {
       result.affiliazione = { semaforo: SEMAFORO.VERDE, needsCallFlag: false, isKO: false };
     } else if (arr.includes("FITP")) {
       result.affiliazione = { semaforo: SEMAFORO.GIALLO, needsCallFlag: false, isKO: false };
-    } else if (arr.includes("Altro EPS") || arr.includes("Nessuna")) {
+    } else if (arr.includes("Altro EPS")) {
       result.affiliazione = { semaforo: SEMAFORO.ARANCIONE, needsCallFlag: false, isKO: false };
     } else {
       result.affiliazione = { semaforo: SEMAFORO.ROSSO, needsCallFlag: true, isKO: true };
@@ -203,6 +204,8 @@ export function calcolaSemaforiA(data) {
     default:
       result.sitoWeb = { semaforo: SEMAFORO.NEUTRO, needsCallFlag: true, isKO: false };
   }
+
+  result.prenotazioneOnlineSito = { semaforo: SEMAFORO.NEUTRO, needsCallFlag: false, isKO: false };
 
   // A.12 Instagram
   result.instagram = socialSemaforo(data.instagram);
